@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/bottom_home"
+        android:icon="@drawable/baseline_home_filled_24"
+        android:title="" />
+    <item
+        android:id="@+id/bottom_health"
+        android:icon="@drawable/nav_search"
+        android:title=""/>
+    <item
+        android:id="@+id/bottom_new_remin"
+        android:title=""
+        android:icon="@drawable/baseline_new_remin"/>
+    <item
+        android:id="@+id/bottom_reminders"
+        android:icon="@drawable/nav_settings"
+        android:title=""/>
+    <item
+        android:id="@+id/bottom_profile"
+        android:icon="@drawable/nav_profile"
+        android:title=""/>
+
+</menu>

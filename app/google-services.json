@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "112303409799",
+    "project_id": "pet-pals-5515a",
+    "storage_bucket": "pet-pals-5515a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112303409799:android:799024dc4a23e92c408622",
+        "android_client_info": {
+          "package_name": "com.example.project_mad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS2Hmsy4uLSI4_fAMBCHvJR-7FJFHLCDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
