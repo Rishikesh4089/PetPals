@@ -1,9 +1,9 @@
 package com.example.project_mad;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private ImageView nav_back;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,30 +30,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.bottom_home);
 
+        // BottomNavigationView item selection listener
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()){
+            Fragment selectedFragment = null;
+            switch (item.getItemId()) {
                 case R.id.bottom_home:
-                    return true;
+                    selectedFragment = new HomeFragment();
+                    break;
                 case R.id.bottom_health:
-                    startActivity(new Intent(getApplicationContext(), HealthFragment.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    finish();
-                    return true;
+                    selectedFragment = new HealthFragment();
+                    break;
                 case R.id.bottom_reminders:
-                    startActivity(new Intent(getApplicationContext(), RemindersFragment.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    finish();
-                    return true;
+                    selectedFragment = new RemindersFragment();
+                    break;
                 case R.id.bottom_profile:
-                    startActivity(new Intent(getApplicationContext(), ProfileFragment.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    finish();
-                    return true;
+                    selectedFragment = new ProfileFragment();
+                    break;
             }
-            return false;
-        });
-        // Set up the arrow back button to go back to the previous fragment
 
+            // Replace the fragment
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
+            return true;
+        });
 
         // Set up the Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,50 +64,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up the DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Set up the ActionBarDrawerToggle with a custom icon
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
-                R.string.close_nav);
+        // Set up the ActionBarDrawerToggle
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
-        toggle.setHomeAsUpIndicator(R.drawable.nav_drawer);
         toggle.syncState();
 
-
-
-
         // Load the HomeFragment by default
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
         }
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item){
-        switch (item.getItemId()){
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment selectedFragment = null;
+        switch (item.getItemId()) {
             case R.id.nav_home:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+                selectedFragment = new HomeFragment();
                 break;
             case R.id.nav_profile:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+                selectedFragment = new ProfileFragment();
                 break;
             case R.id.nav_health:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HealthFragment()).commit();
+                selectedFragment = new HealthFragment();
                 break;
             case R.id.nav_reminders:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RemindersFragment()).commit();
+                selectedFragment = new RemindersFragment();
                 break;
             case R.id.nav_gps:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GpsFragment()).commit();
+                selectedFragment = new GpsFragment();
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+
+                SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("isLoggedIn", false);
+                editor.apply();
+
+                // Navigate back to the login screen
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
-                break;
+                return true;
+        }
+
+        if (selectedFragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -116,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("deprecation")
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }

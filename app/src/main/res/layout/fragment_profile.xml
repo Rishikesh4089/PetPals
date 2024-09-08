@@ -1,25 +1,228 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ProfileFragment">
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Profile"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"
-        android:textColor="#000000"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_menu" />
+        android:background="@color/white">
 
-</RelativeLayout>
+        <!-- Profile Details Section -->
+        <LinearLayout
+            android:id="@+id/ProfileDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <!-- Owner Information -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/ownerName"
+                android:minHeight="48dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your Name"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Age"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/ownerAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="Enter your Age"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <RadioGroup
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioMale"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Male"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioFemale"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Female"/>
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:minHeight="48dp"
+                android:layout_height="wrap_content"
+                android:hint="Enter your Address"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mobile Number"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="Enter your Mobile Number"
+                android:inputType="phone" />
+
+            <!-- Pet Details Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="Pet Details"
+                android:textColor="@color/dark_blue"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet Name"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/petName"
+                android:minHeight="48dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your Pet's Name"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet Age"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/petAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="Enter your Pet's Age"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet Gender"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <RadioGroup
+                android:id="@+id/petGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioPetMale"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Male"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioPetFemale"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Female"/>
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pet Type"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/petType"
+                android:layout_width="match_parent"
+                android:minHeight="48dp"
+                android:layout_height="wrap_content"
+                android:hint="Enter your Pet Type (e.g. Dog, Cat...)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Breed"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/breed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="Enter the Breed"
+                android:inputType="textPersonName" />
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnSaveProfile"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bottom_background"
+                android:layout_marginTop="10dp"
+                android:text="Save Profile" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>
