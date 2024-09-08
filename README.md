@@ -1,6 +1,3 @@
-If you want to keep your project private, you can adjust the README file accordingly. Here’s a version with a focus on internal use and keeping the project private:
-
----
 
 # Pet Utility App
 
