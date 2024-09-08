@@ -21,13 +21,13 @@ The Pet Utility App is designed to assist pet owners in managing their pets' act
    Ensure you have access to the repository.
 
    ```bash
-   git clone https://github.com/yourusername/pet-utility-app.git
+   git clone https://github.com/yourusername/PetPals-app.git
    ```
 
 2. **Navigate to the project directory:**
 
    ```bash
-   cd pet-utility-app
+   cd PetPals-app
    ```
 
 3. **Install the dependencies:**
