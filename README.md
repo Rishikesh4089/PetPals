@@ -73,7 +73,3 @@ This project is private and is not licensed for public use. All rights are reser
 ## Contact
 
 For internal inquiries or support, please contact the project lead directly.
-
----
-
-This README is tailored for private use and doesn't include public-facing sections like licensing or contributing guidelines. Adjust the contact details as needed for your specific team or internal structure.
