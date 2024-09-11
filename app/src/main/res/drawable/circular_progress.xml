@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background circle -->
+    <item>
+        <shape android:shape="ring"
+            android:thickness="6dp"
+            android:useLevel="false">
+            <solid android:color="@color/red" />
+        </shape>
+    </item>
+
+    <!-- Progress foreground -->
+    <item>
+        <rotate
+            android:fromDegrees="270"
+            android:toDegrees="270">
+            <shape android:shape="ring"
+                android:thickness="6dp"
+                android:useLevel="true">
+                <solid android:color="@color/yellow" />
+            </shape>
+        </rotate>
+    </item>
+</layer-list>
