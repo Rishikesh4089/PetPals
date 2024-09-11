@@ -40,7 +40,7 @@
         android:id="@+id/nav_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="App made by Rishikesh Prabhu"
+        android:text="App made by Rishikesh, Harshal, Anushka and Nandi"
         android:textColor="@color/black"
         android:textStyle="italic"
         android:layout_marginTop="16dp" />
