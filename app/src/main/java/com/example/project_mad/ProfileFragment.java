@@ -2,14 +2,12 @@ package com.example.project_mad;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -17,13 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.project_mad.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class ProfileFragment extends Fragment {
 
@@ -32,7 +30,7 @@ public class ProfileFragment extends Fragment {
     private Button btnSaveProfile;
     private LinearLayout ProfileDetails;
     private DatabaseReference databaseReference;
-    private SharedPreferences sharedPreferences;
+    private FirebaseAuth auth; // Added FirebaseAuth
     private String userId;
 
     @Nullable
@@ -54,17 +52,21 @@ public class ProfileFragment extends Fragment {
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         ProfileDetails = view.findViewById(R.id.ProfileDetails);
 
-        // SharedPreferences setup
-        sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        // Initialize FirebaseAuth
+        auth = FirebaseAuth.getInstance();
 
-        // Retrieve or generate the userId
-        userId = sharedPreferences.getString("userId", null);
-        if (userId == null) {
-            // Generate a new userId and save it to SharedPreferences
-            userId = UUID.randomUUID().toString();
-            sharedPreferences.edit().putString("userId", userId).apply();
+        // Get current user
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid(); // Use authenticated user's UID
+        } else {
+            // Handle case where user is not authenticated
+            Toast.makeText(getContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
+            return view; // Exit the method to avoid null pointer exceptions
         }
+
+        // Initialize database reference
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Load existing profile details
         loadProfile();
