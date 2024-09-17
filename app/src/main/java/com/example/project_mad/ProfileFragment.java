@@ -1,12 +1,15 @@
 package com.example.project_mad;
 
-import android.content.SharedPreferences;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -15,23 +18,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class ProfileFragment extends Fragment {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
+
     private EditText ownerName, ownerAge, address, phone, petName, petAge, petType, breed;
     private RadioGroup gender, petGender;
-    private Button btnSaveProfile;
+    private Button btnSaveProfile, buttonSelectImage;
+    private ImageView petProfileImage;
     private LinearLayout ProfileDetails;
     private DatabaseReference databaseReference;
-    private FirebaseAuth auth; // Added FirebaseAuth
+    private FirebaseAuth auth;
     private String userId;
+    private Uri imageUri;
+    private StorageReference storageReference;
 
     @Nullable
     @Override
@@ -39,6 +51,8 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Initialize views
+        petProfileImage = view.findViewById(R.id.petProfileImage);
+        buttonSelectImage = view.findViewById(R.id.buttonSelectImage);
         ownerName = view.findViewById(R.id.ownerName);
         ownerAge = view.findViewById(R.id.ownerAge);
         gender = view.findViewById(R.id.gender);
@@ -52,111 +66,127 @@ public class ProfileFragment extends Fragment {
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         ProfileDetails = view.findViewById(R.id.ProfileDetails);
 
-        // Initialize FirebaseAuth
+        // Initialize FirebaseAuth and Firebase Database
         auth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference("profile_photos");
 
-        // Get current user
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
-            userId = currentUser.getUid(); // Use authenticated user's UID
+            userId = currentUser.getUid();
         } else {
-            // Handle case where user is not authenticated
             Toast.makeText(getContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
-            return view; // Exit the method to avoid null pointer exceptions
+            return view;
         }
 
-        // Initialize database reference
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // Load existing profile details
+        // Load profile data and image
         loadProfile();
 
-        // Set onClickListener for Save button
+        buttonSelectImage.setOnClickListener(v -> openFileChooser());
         btnSaveProfile.setOnClickListener(v -> saveProfile());
 
         return view;
     }
 
-    private void loadProfile() {
-        databaseReference.child("users").child(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult().exists()) {
-                // Profile exists, populate the fields with existing data
-                UserProfile profile = task.getResult().getValue(UserProfile.class);
-                if (profile != null) {
-                    ownerName.setText(profile.ownerName);
-                    ownerAge.setText(profile.ownerAge);
-                    address.setText(profile.address);
-                    phone.setText(profile.phone);
-                    petName.setText(profile.petName);
-                    petAge.setText(profile.petAge);
-                    petType.setText(profile.petType);
-                    breed.setText(profile.breed);
-
-                    // Set the gender selection in the RadioGroup
-                    if (profile.gender.equals("Male")) {
-                        gender.check(R.id.radioMale);
-                    } else if (profile.gender.equals("Female")) {
-                        gender.check(R.id.radioFemale);
-                    }
-
-                    // Set the pet gender selection in the RadioGroup
-                    if (profile.petGender.equals("Male")) {
-                        petGender.check(R.id.radioPetMale);
-                    } else if (profile.petGender.equals("Female")) {
-                        petGender.check(R.id.radioPetFemale);
-                    }
-                }
-            } else {
-                // Handle the case where profile does not exist
-                Toast.makeText(getContext(), "No profile found. Please fill in your details.", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
-    private void saveProfile() {
-        String ownerNameVal = ownerName.getText().toString();
-        String ownerAgeVal = ownerAge.getText().toString();
-        String addressVal = address.getText().toString();
-        String phoneVal = phone.getText().toString();
-        String petNameVal = petName.getText().toString();
-        String petAgeVal = petAge.getText().toString();
-        String petTypeVal = petType.getText().toString();
-        String breedVal = breed.getText().toString();
-
-        // Get the selected gender from RadioGroup
-        String genderVal = gender.getCheckedRadioButtonId() == R.id.radioMale ? "Male" : "Female";
-
-        // Get the selected pet gender from RadioGroup
-        String petGenderVal = petGender.getCheckedRadioButtonId() == R.id.radioPetMale ? "Male" : "Female";
-
-        if (!ownerNameVal.isEmpty() && !ownerAgeVal.isEmpty() && !addressVal.isEmpty() && !phoneVal.isEmpty()) {
-            // Create a map to hold the fields to update
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("ownerName", ownerNameVal);
-            updates.put("ownerAge", ownerAgeVal);
-            updates.put("gender", genderVal);
-            updates.put("address", addressVal);
-            updates.put("phone", phoneVal);
-            updates.put("petName", petNameVal);
-            updates.put("petAge", petAgeVal);
-            updates.put("petGender", petGenderVal);
-            updates.put("petType", petTypeVal);
-            updates.put("breed", breedVal);
-
-            // Update only the provided fields without affecting others
-            databaseReference.child("users").child(userId).updateChildren(updates).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
-                    Toast.makeText(getContext(), "Failed to update profile: " + errorMessage, Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            petProfileImage.setImageURI(imageUri);
         }
     }
 
-    // Model class for UserProfile will be needed here
+    private void saveProfile() {
+        // Save profile data to Firebase Realtime Database
+        String ownerNameStr = ownerName.getText().toString();
+        String ownerAgeStr = ownerAge.getText().toString();
+        String addressStr = address.getText().toString();
+        String phoneStr = phone.getText().toString();
+        String petNameStr = petName.getText().toString();
+        String petAgeStr = petAge.getText().toString();
+        String petTypeStr = petType.getText().toString();
+        String breedStr = breed.getText().toString();
 
+        String genderStr = gender.getCheckedRadioButtonId() == R.id.radioMale ? "Male" : "Female";
+        String petGenderStr = petGender.getCheckedRadioButtonId() == R.id.radioPetMale ? "Male" : "Female";
+
+        // Create a profile object
+        UserProfile profile = new UserProfile(ownerNameStr, ownerAgeStr, addressStr, phoneStr, genderStr,
+                petNameStr, petTypeStr, petAgeStr, petGenderStr, breedStr, null);
+
+        // Save profile data to the database
+        databaseReference.child("users").child(userId).setValue(profile)
+                .addOnSuccessListener(aVoid -> {
+                    if (imageUri != null) {
+                        // Upload the image to Firebase Storage
+                        StorageReference fileReference = storageReference.child(userId + ".jpg");
+                        fileReference.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        // Save the image URL with the userId in the database
+                                        databaseReference.child("users").child(userId).child("petImageUrl").setValue(uri.toString())
+                                                .addOnSuccessListener(aVoid1 -> Toast.makeText(getContext(), "Profile saved successfully", Toast.LENGTH_SHORT).show())
+                                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                    });
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    } else {
+                        Toast.makeText(getContext(), "Profile saved successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadProfile() {
+        databaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    UserProfile profile = dataSnapshot.getValue(UserProfile.class);
+                    if (profile != null) {
+                        ownerName.setText(profile.ownerName);
+                        ownerAge.setText(profile.ownerAge);
+                        address.setText(profile.address);
+                        phone.setText(profile.phone);
+                        petName.setText(profile.petName);
+                        petAge.setText(profile.petAge);
+                        petType.setText(profile.petType);
+                        breed.setText(profile.breed);
+
+                        if (profile.gender.equals("Male")) {
+                            gender.check(R.id.radioMale);
+                        } else {
+                            gender.check(R.id.radioFemale);
+                        }
+
+                        if (profile.petGender.equals("Male")) {
+                            petGender.check(R.id.radioPetMale);
+                        } else {
+                            petGender.check(R.id.radioPetFemale);
+                        }
+
+                        // Load and display the profile photo
+                        if (profile.petImageUrl != null) {
+                            Glide.with(ProfileFragment.this).load(profile.petImageUrl).into(petProfileImage);
+                        }
+                    }
+                } else {
+                    Toast.makeText(getContext(), "No profile found. Please fill in your details.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Failed to load profile: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

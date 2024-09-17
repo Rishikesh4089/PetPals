@@ -16,6 +16,34 @@
             android:orientation="vertical"
             android:visibility="visible">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/petProfileImage"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:src="@drawable/ic_default_pet_image"
+                    android:layout_marginBottom="16dp"
+                    android:scaleType="centerCrop" />
+
+                <Button
+                    android:id="@+id/buttonSelectImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bottom_background"
+                    android:layout_marginTop="10dp"
+                    android:text="Select Profile Image" />
+
+            </LinearLayout>
+
+
             <!-- Owner Information -->
             <TextView
                 android:layout_width="wrap_content"

@@ -11,15 +11,16 @@ public class UserProfile {
     public String petGender;
     public String petType;
     public String breed;
+    public String petImageUrl;  // Add this field to store the image URL
 
-
-
-
+    // Default constructor
     public UserProfile() {
-        // Default constructor required for calls to DataSnapshot.getValue(FarmerProfile.class)
     }
 
-    public UserProfile(String ownerName, String ownerAge, String address, String phone, String gender,String petName, String petType, String petAge, String petGender, String breed) {
+    // Parameterized constructor
+    public UserProfile(String ownerName, String ownerAge, String address, String phone, String gender,
+                       String petName, String petType, String petAge, String petGender, String breed,
+                       String petImageUrl) {
         this.ownerName = ownerName;
         this.ownerAge = ownerAge;
         this.address = address;
@@ -30,6 +31,6 @@ public class UserProfile {
         this.petAge = petAge;
         this.petGender = petGender;
         this.breed = breed;
-
+        this.petImageUrl = petImageUrl;  // Set the image URL
     }
 }
