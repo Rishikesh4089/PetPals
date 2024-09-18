@@ -1,25 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".RemindersFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reminders"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"
-        android:textColor="#000000" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_menu" />
+        android:layout_height="wrap_content">
 
-</RelativeLayout>
+        <!-- Title TextView -->
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminders"
+            android:textSize="30sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:textColor="#000000" />
+
+        <!-- Calendar View -->
+        <CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/titleTextView"
+            android:layout_marginTop="20dp" />
+
+        <!-- Container for event cards -->
+        <LinearLayout
+            android:id="@+id/eventsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/calendarView"
+            android:layout_marginTop="20dp" />
+
+        <!-- Floating Action Button to add reminders -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addReminderButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:layout_below="@id/eventsContainer"
+            android:contentDescription="Add Reminder"
+            android:src="@android:drawable/ic_input_add"
+            app:backgroundTint="@color/blue" />
+
+        <!-- Bottom Navigation View -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/addReminderButton"
+            android:layout_marginTop="20dp"
+            app:menu="@menu/bottom_menu" />
+
+    </RelativeLayout>
+</ScrollView>

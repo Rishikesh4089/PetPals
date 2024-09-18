@@ -1,64 +1,177 @@
 package com.example.project_mad;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.HashMap;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RemindersFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RemindersFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private CalendarView calendarView;
+    private LinearLayout eventsContainer;
+    private TextView noRemindersTextView;
+    private FloatingActionButton addReminderButton;
+    private DatabaseReference userRef;
+    private String userId;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_reminders, container, false);
 
-    public RemindersFragment() {
-        // Required empty public constructor
+        // Initialize the views
+        calendarView = rootView.findViewById(R.id.calendarView);
+        eventsContainer = rootView.findViewById(R.id.eventsContainer);
+        addReminderButton = rootView.findViewById(R.id.addReminderButton);
+
+        // Add a TextView for "No Reminders" message
+        noRemindersTextView = new TextView(getContext());
+        noRemindersTextView.setText("No reminders set");
+        noRemindersTextView.setTextSize(18);
+        noRemindersTextView.setTextColor(getResources().getColor(android.R.color.black));
+        noRemindersTextView.setVisibility(View.GONE); // Initially hidden
+        eventsContainer.addView(noRemindersTextView);
+
+        // Get the current user's ID
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+            userRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("reminders");
+            fetchReminders();
+        }
+
+        // Set up CalendarView listener
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                String dateKey = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                showRemindersForDate(dateKey);
+            }
+        });
+
+        // Set up the FloatingActionButton click listener to add a new reminder
+        addReminderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open a dialog or activity to add a new reminder
+                // After saving, call fetchReminders() to update the display
+            }
+        });
+
+        return rootView;
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment.
+     * Fetch reminders from Firebase and display them in the eventsContainer.
      */
-    // TODO: Rename and change types and number of parameters
-    public static RemindersFragment newInstance(String param1, String param2) {
-        RemindersFragment fragment = new RemindersFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private void fetchReminders() {
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventsContainer.removeAllViews(); // Clear previous views
+
+                if (snapshot.exists()) {
+                    for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                        String date = reminderSnapshot.getKey();
+                        String reminder = reminderSnapshot.getValue(String.class);
+                        addEventCard(date, reminder);
+                    }
+                } else {
+                    // No reminders exist
+                    noRemindersTextView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load reminders.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    /**
+     * Display reminders for the selected date.
+     */
+    private void showRemindersForDate(String date) {
+        userRef.child(date).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String reminder = snapshot.getValue(String.class);
+                    showReminderDialog(date, reminder);
+                } else {
+                    Toast.makeText(getContext(), "No events for this date", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load reminder for the selected date.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reminders, container, false);
+    /**
+     * Display a dialog showing the reminder details.
+     */
+    private void showReminderDialog(String date, String reminder) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Reminder for " + date)
+                .setMessage(reminder)
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    /**
+     * Add a CardView to the eventsContainer for each reminder.
+     */
+    private void addEventCard(String date, String reminder) {
+        // Hide the "No reminders set" message if any reminders exist
+        noRemindersTextView.setVisibility(View.GONE);
+
+        // Create a new CardView and set its properties
+        CardView cardView = new CardView(getContext());
+        cardView.setCardElevation(6);
+        cardView.setRadius(8);
+        cardView.setContentPadding(16, 16, 16, 16);
+
+        // Create a LinearLayout to hold the reminder information
+        LinearLayout cardLayout = new LinearLayout(getContext());
+        cardLayout.setOrientation(LinearLayout.VERTICAL);
+
+        // Create and add TextViews for date and reminder
+        TextView dateTextView = new TextView(getContext());
+        dateTextView.setText("Date: " + date);
+        dateTextView.setTextSize(16);
+        dateTextView.setTextColor(getResources().getColor(android.R.color.black));
+        cardLayout.addView(dateTextView);
+
+        TextView reminderTextView = new TextView(getContext());
+        reminderTextView.setText("Reminder: " + reminder);
+        reminderTextView.setTextSize(14);
+        reminderTextView.setTextColor(getResources().getColor(android.R.color.black));
+        cardLayout.addView(reminderTextView);
+
+        // Add the LinearLayout to the CardView
+        cardView.addView(cardLayout);
+
+        // Add the CardView to the eventsContainer
+        eventsContainer.addView(cardView);
     }
 }
