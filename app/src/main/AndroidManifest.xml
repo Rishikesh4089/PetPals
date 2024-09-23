@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Project_mad"
         tools:targetApi="31">
         <activity
+            android:name=".AppointmentFragment"
+            android:exported="false" />
+        <activity
             android:name=".SplashScreen"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
@@ -27,12 +30,11 @@
             android:exported="false" />
         <activity
             android:name=".SignUpActivity"
-            android:exported="false"/>
-
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>
