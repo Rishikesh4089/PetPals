@@ -16,7 +16,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.petpals.AppointmentFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -46,15 +45,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.nav_home:
                     selectedFragment = new HomeFragment();
                     break;
-                case R.id.nav_search:
-                    selectedFragment = new AppointmentFragment();  // Link to AppointmentFragment here
-                    break;
+
 
                 case R.id.bottom_home:
                     selectedFragment = new HomeFragment();
                     break;
                 case R.id.bottom_health:
-                    selectedFragment = new HealthFragment();
+                    selectedFragment = new AppointmentFragment();
                     break;
                 case R.id.bottom_reminders:
                     selectedFragment = new RemindersFragment();
