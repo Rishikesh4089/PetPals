@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     selectedFragment = new HomeFragment();
                     break;
                 case R.id.bottom_health:
-                    selectedFragment = new AppointmentFragment();
+                    selectedFragment = new HealthFragment();
+                    break;
+                case R.id.bottom_training:
+                    selectedFragment = new TrainingFragment();
                     break;
                 case R.id.bottom_reminders:
                     selectedFragment = new RemindersFragment();
-                    break;
-                case R.id.bottom_profile:
-                    selectedFragment = new ProfileFragment();
                     break;
             }
 
@@ -103,14 +103,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_home:
                 selectedFragment = new HomeFragment();
                 break;
-            case R.id.nav_profile:
-                selectedFragment = new ProfileFragment();
+            case R.id.nav_settings:
+                selectedFragment = new SettingsFragment();
                 break;
-            case R.id.nav_health:
+            case R.id.nav_appointments:
                 selectedFragment = new HealthFragment();
-                break;
-            case R.id.nav_reminders:
-                selectedFragment = new RemindersFragment();
                 break;
             case R.id.nav_gps:
                 selectedFragment = new GpsFragment();

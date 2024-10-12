@@ -6,24 +6,9 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/doctor_name_view"
+        android:id="@+id/appointment_title_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Doctor Name"
+        android:text="Appointment Title"
         android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/appointment_date_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/appointment_time_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Time"
-        android:textSize="14sp" />
-
 </LinearLayout>

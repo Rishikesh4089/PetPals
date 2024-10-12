@@ -1,0 +1,121 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CustomTextStyle">
+
+        <!-- Profile Details Section -->
+        <LinearLayout
+            android:id="@+id/ProfileDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <!-- Your account TextView -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your account"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                style="@style/CustomTextStyle" />
+
+            <!-- Horizontal line below the Your account TextView -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/black"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Owner Information -->
+            <TextView
+                android:id="@+id/profileLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                android:textColor="@color/black"
+                android:paddingTop="10dp"
+                android:minHeight="48dp"
+                android:layout_marginBottom="4dp"
+                style="@style/CustomTextStyle"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+
+            <TextView
+                android:id="@+id/resetPasswordLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Reset Password"
+                android:textColor="@color/black"
+                style="@style/CustomTextStyle"
+                android:layout_marginBottom="4dp"
+                android:minHeight="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <TextView
+                android:id="@+id/addAccountLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="Add Account"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp"
+                android:paddingTop="10dp"
+                style="@style/CustomTextStyle"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <TextView
+                android:id="@+id/deleteAccountLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Account"
+                android:textColor="@color/black"
+                style="@style/CustomTextStyle"
+                android:layout_marginBottom="4dp"
+                android:paddingTop="10dp"
+                android:minHeight="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <TextView
+                android:id="@+id/logoutLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Log Out"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="10dp"
+                style="@style/CustomTextStyle"
+                android:textColor="@color/dark_grey"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:textSize="14dp"
+                android:minHeight="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/black"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

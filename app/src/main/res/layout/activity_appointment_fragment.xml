@@ -1,33 +1,18 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/doctor_name"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Doctor Name" />
-
-    <EditText
-        android:id="@+id/appointment_reason"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Appointment Reason" />
-
-    <Button
-        android:id="@+id/appointment_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Date" />
-
-    <Button
-        android:id="@+id/appointment_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Time" />
+        android:text="Doctor's Appointment"
+        android:layout_gravity="center_horizontal"
+        android:textSize="30dp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/add_appointment_button"
@@ -35,16 +20,21 @@
         android:layout_height="wrap_content"
         android:text="Add Appointment" />
 
-    <Button
-        android:id="@+id/delete_appointment_button"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/appointment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Delete Appointment" />
-
-    <ListView
-        android:id="@+id/appointment_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:dividerHeight="10dp" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_appointment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/blue"
+        android:clickable="true" />
 </LinearLayout>

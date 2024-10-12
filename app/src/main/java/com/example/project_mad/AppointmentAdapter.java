@@ -41,13 +41,12 @@ public class AppointmentAdapter extends BaseAdapter {
 
         Appointment appointment = appointments.get(position);
 
-        TextView doctorName = convertView.findViewById(R.id.doctor_name_view);
-        TextView appointmentDate = convertView.findViewById(R.id.appointment_date_view);
-        TextView appointmentTime = convertView.findViewById(R.id.appointment_time_view);
+        TextView titleView = convertView.findViewById(R.id.appointment_title_view);
 
-        doctorName.setText(appointment.getDoctorName());
-        appointmentDate.setText(appointment.getDate());
-        appointmentTime.setText(appointment.getTime());
+
+        // Set text for the views
+        titleView.setText(appointment.getTitle());
+
 
         return convertView;
     }

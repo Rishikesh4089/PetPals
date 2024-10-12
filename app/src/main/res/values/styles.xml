@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomTextStyle">
+        <item name="android:fontFamily">@font/helveticaneue</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+</resources>
