@@ -43,7 +43,7 @@ public class ChatbotFragment extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar);
 
         // Initialize the ChatGPTClient with your API key
-        String apiKey = "sk-5AHKF-UuqBinVqzcv8O-KyCAU5dkPpFi6H6SZ7bwkiT3BlbkFJztc3L_iVtMqBBw8qkEq2c4W1ZLwA9e0TQO2Ct2o5cA"; // Replace with your OpenAI API key
+        String apiKey = "ssf"; // Replace with your OpenAI API key
         chatGPTClient = new ChatGPTClient(apiKey);
 
         messages = new ArrayList<>(); // Initialize the message history

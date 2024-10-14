@@ -13,7 +13,7 @@ public class ChatGPTClient {
 
     // Constructor with API key as a parameter
     public ChatGPTClient(String apiKey) {
-        this.apiKey = "sk-5AHKF-UuqBinVqzcv8O-KyCAU5dkPpFi6H6SZ7bwkiT3BlbkFJztc3L_iVtMqBBw8qkEq2c4W1ZLwA9e0TQO2Ct2o5cA"; // Set the API key from constructor parameter
+        this.apiKey = "df"; // Set the API key from constructor parameter
         this.client = new OkHttpClient();
     }
 
