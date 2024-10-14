@@ -1,53 +1,51 @@
 package com.example.project_mad;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class AppointmentAdapter extends BaseAdapter {
-    private Context context;
-    private ArrayList<Appointment> appointments;
+import java.util.List;
 
-    public AppointmentAdapter(Context context, ArrayList<Appointment> appointments) {
-        this.context = context;
-        this.appointments = appointments;
+public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder> {
+
+    private List<Appointment> appointmentList;
+
+    public AppointmentAdapter(List<Appointment> appointmentList) {
+        this.appointmentList = appointmentList;
+    }
+
+    @NonNull
+    @Override
+    public AppointmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.appointment_card_view, parent, false);
+        return new AppointmentViewHolder(view);
     }
 
     @Override
-    public int getCount() {
-        return appointments.size();
+    public void onBindViewHolder(@NonNull AppointmentViewHolder holder, int position) {
+        Appointment appointment = appointmentList.get(position);
+        holder.doctorName.setText(appointment.getDoctorName());
+        holder.dateTime.setText(appointment.getDate() + " at " + appointment.getTime());
+        holder.type.setText(appointment.getType());
     }
 
     @Override
-    public Object getItem(int position) {
-        return appointments.get(position);
+    public int getItemCount() {
+        return appointmentList.size();
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+    public class AppointmentViewHolder extends RecyclerView.ViewHolder {
+        TextView doctorName, dateTime, type;
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.appointment_item, parent, false);
+        public AppointmentViewHolder(@NonNull View itemView) {
+            super(itemView);
+            doctorName = itemView.findViewById(R.id.appointment_doctor_name);
+            dateTime = itemView.findViewById(R.id.appointment_date_time);
+            type = itemView.findViewById(R.id.appointment_type);
         }
-
-        Appointment appointment = appointments.get(position);
-
-        TextView titleView = convertView.findViewById(R.id.appointment_title_view);
-
-
-        // Set text for the views
-        titleView.setText(appointment.getTitle());
-
-
-        return convertView;
     }
 }

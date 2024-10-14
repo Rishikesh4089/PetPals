@@ -107,10 +107,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 selectedFragment = new SettingsFragment();
                 break;
             case R.id.nav_appointments:
-                selectedFragment = new HealthFragment();
+                selectedFragment = new DoctorsAppointmentsFragment();
                 break;
             case R.id.nav_gps:
                 selectedFragment = new GpsFragment();
+                break;
+            case R.id.nav_chatbot:
+                selectedFragment = new ChatbotFragment();
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MedicalProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Vaccination Records -->
+        <TextView
+            android:id="@+id/vaccination_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vaccination Records"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/vaccination_list_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter vaccination details"
+            android:inputType="textMultiLine"
+            android:paddingBottom="16dp"/>
+
+        <!-- Medical History -->
+        <TextView
+            android:id="@+id/medical_history_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medical History"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/medical_history_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter medical history"
+            android:inputType="textMultiLine"
+            android:paddingBottom="16dp" />
+
+        <!-- Allergies -->
+        <TextView
+            android:id="@+id/allergies_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Allergies"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/allergies_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter allergies"
+            android:inputType="textMultiLine"
+            android:paddingBottom="16dp"/>
+
+        <!-- Ongoing Medications -->
+        <TextView
+            android:id="@+id/medications_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Medications"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/medications_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter medications and dosages"
+            android:inputType="textMultiLine"
+            android:paddingBottom="16dp"/>
+
+        <!-- Behavioral Traits -->
+        <TextView
+            android:id="@+id/behavioral_traits_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Behavioral Traits"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/behavioral_traits_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Describe behavioral traits"
+            android:inputType="textMultiLine"
+            android:paddingBottom="16dp"/>
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/save_medical_profile_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Medical Profile" />
+
+    </LinearLayout>
+</ScrollView>

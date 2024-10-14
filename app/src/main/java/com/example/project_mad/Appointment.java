@@ -1,26 +1,38 @@
 package com.example.project_mad;
 
 public class Appointment {
-    private String title;
+
     private String doctorName;
-    private String reason;
     private String date;
     private String time;
+    private String reason;
+    private String type;
 
-    // Default constructor required for calls to DataSnapshot.getValue(Appointment.class)
-    public Appointment() {}
-
-    public Appointment(String title, String doctorName, String reason, String date, String time) {
-        this.title = title;
+    public Appointment(String doctorName, String date, String time, String reason, String type) {
         this.doctorName = doctorName;
-        this.reason = reason;
         this.date = date;
         this.time = time;
+        this.reason = reason;
+        this.type = type;
     }
 
-    public String getTitle() { return title; }
-    public String getDoctorName() { return doctorName; }
-    public String getReason() { return reason; }
-    public String getDate() { return date; }
-    public String getTime() { return time; }
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public String getType() {
+        return type;
+    }
 }

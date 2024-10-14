@@ -24,6 +24,11 @@
             android:id="@+id/nav_gps"
             android:icon="@drawable/nav_gps"
             android:title="GPS" />
+
+        <item
+            android:id="@+id/nav_chatbot"
+            android:icon="@drawable/nav_chatbot"
+            android:title="Chatbot" />
     </group>
 
     <item

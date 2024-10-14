@@ -1,44 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/dialog_add_appointment.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Doctor's Name Input -->
     <EditText
-        android:id="@+id/appointment_title"
+        android:id="@+id/doctor_name_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title of Appointment" />
+        android:hint="Doctor's Name" />
 
+    <!-- Reason for Appointment Input -->
     <EditText
-        android:id="@+id/doctor_name"
+        android:id="@+id/appointment_reason_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Doctor Name" />
+        android:hint="Reason for Appointment"
+        android:inputType="textMultiLine" />
 
-    <EditText
-        android:id="@+id/appointment_reason"
+    <!-- Appointment Type (Consultation, Visit, Online) -->
+    <Spinner
+        android:id="@+id/appointment_type_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Appointment Reason" />
+        android:entries="@array/appointment_types" />
 
+    <!-- Select Appointment Date -->
     <Button
-        android:id="@+id/appointment_date"
+        android:id="@+id/select_date_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Date" />
 
+    <!-- Select Appointment Time -->
     <Button
-        android:id="@+id/appointment_time"
+        android:id="@+id/select_time_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Time" />
 
+    <!-- Upload Medical Profile -->
     <Button
-        android:id="@+id/add_appointment_button"
+        android:id="@+id/upload_medical_profile_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Appointment" />
+        android:text="Upload Medical Profile" />
+
+    <!-- Save Appointment Button -->
+    <Button
+        android:id="@+id/save_appointment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Appointment" />
 </LinearLayout>

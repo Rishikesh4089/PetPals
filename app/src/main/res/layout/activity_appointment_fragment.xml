@@ -1,40 +1,37 @@
+<!-- res/layout/activity_doctors_appointments.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Title at the top -->
     <TextView
+        android:id="@+id/appointment_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Doctor's Appointment"
+        android:text="Doctor's Appointments"
         android:layout_gravity="center_horizontal"
-        android:textSize="30dp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/add_appointment_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Appointment" />
-
+    <!-- RecyclerView to display appointments -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/appointment_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:dividerHeight="10dp" />
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:scrollbars="vertical" />
 
+    <!-- Floating Action Button to add new appointment -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_appointment"
+        android:id="@+id/add_appointment_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add"
-        app:tint="@android:color/white"
-        app:backgroundTint="@color/blue"
-        android:clickable="true" />
+        android:src="@drawable/ic_add" />
 </LinearLayout>

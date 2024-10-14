@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="50dp"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="end"
+    android:padding="10dp"
+    android:elevation="5dp">
+
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="0.1"
+    android:orientation="horizontal"
+    android:background="@drawable/tooltip_background"
+    android:padding="10dp">
+
+<TextView
+android:id="@+id/tooltip_message"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_weight="1"
+android:text="Set up your medical profile and add a link to open that page"
+android:textColor="@android:color/black"
+android:textSize="14sp" />
+
+<Button
+android:id="@+id/tooltip_close_button"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="X"
+android:textColor="@android:color/black"
+android:background="?android:selectableItemBackgroundBorderless"
+android:layout_gravity="end"/>
+    </LinearLayout>
+
+    </LinearLayout>
