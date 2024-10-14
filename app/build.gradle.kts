@@ -20,10 +20,18 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+
+            // Ensure the correct key is used for the API_KEY
+            buildConfigField( "String", "API_KEY", project.findProperty("API_KEY").toString())
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // Ensure the correct key is used for the API_KEY
+            buildConfigField("String", "API_KEY", project.findProperty("API_KEY").toString())
         }
     }
 
@@ -36,8 +44,6 @@ android {
         viewBinding = true
     }
 }
-
-
 
 dependencies {
     implementation(libs.appcompat)
@@ -53,9 +59,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
-
 }
