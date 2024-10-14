@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 selectedFragment = new GpsFragment();
                 break;
             case R.id.nav_chatbot:
-                selectedFragment = new ChatbotFragment();
+                selectedFragment = new GpsFragment();
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();

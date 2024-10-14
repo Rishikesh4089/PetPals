@@ -21,17 +21,10 @@ android {
         release {
             isMinifyEnabled = false
 
-            // Ensure the correct key is used for the API_KEY
-            buildConfigField( "String", "API_KEY", project.findProperty("API_KEY").toString())
-
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            // Ensure the correct key is used for the API_KEY
-            buildConfigField("String", "API_KEY", project.findProperty("API_KEY").toString())
         }
     }
 
