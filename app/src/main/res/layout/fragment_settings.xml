@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Delete Account"
-                android:textColor="@color/black"
+                android:textColor="@color/red"
                 style="@style/CustomTextStyle"
                 android:layout_marginBottom="4dp"
                 android:paddingTop="10dp"

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_confirm_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Are you sure you want to delete your account?"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:backgroundTint="@color/blue"
+                android:textSize="18sp"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:background="@drawable/button_rounded_background"
+                android:textColor="@color/white"/>
+
+            <Button
+                android:id="@+id/btn_confirm_delete"
+                android:layout_width="wrap_content"
+                android:backgroundTint="@color/red"
+                android:textSize="18sp"
+                android:background="@drawable/button_red_rounded_background"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Delete"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
