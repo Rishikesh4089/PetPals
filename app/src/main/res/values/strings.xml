@@ -8,4 +8,14 @@
         <item>Visit</item>
         <item>Online</item>
     </string-array>
+    <string-array name="reminderStatusSpinner">
+        <item>Pending</item>
+        <item>Completed</item>
+        <item>Overdue</item>
+        </string-array>
+    <string-array name="reminderListSpinner">
+        <item>Pending</item>
+        <item>Completed</item>
+        <item>Overdue</item>
+    </string-array>
 </resources>
