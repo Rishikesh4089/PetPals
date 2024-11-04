@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:padding="20dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/titlelabel"
+            android:layout_width="38dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="317dp"
+            android:text="Title"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/reminderTitle"
+            android:layout_width="329dp"
+            android:layout_height="43dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="-2dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="60dp"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/desclabel"
+            android:layout_width="73dp"
+            android:layout_height="43dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="317dp"
+            android:text="Description"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/reminderDescription"
+            android:layout_width="289dp"
+            android:layout_height="55dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="86dp"
+            android:layout_marginTop="10dp" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

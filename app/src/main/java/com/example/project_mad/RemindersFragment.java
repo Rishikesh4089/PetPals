@@ -1,26 +1,30 @@
 package com.example.project_mad;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
+import java.util.Calendar;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_mad.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RemindersFragment extends Fragment {
@@ -39,10 +44,11 @@ public class RemindersFragment extends Fragment {
     private EditText searchEditText;
     private DatabaseReference userRef;
     private FirebaseAuth mAuth;
+    private ArrayList<String> listOptions;
+    private ArrayAdapter<String> listAdapter;
+    private boolean isFlagged = false;
 
-    public RemindersFragment() {
-        // Required empty public constructor
-    }
+    public RemindersFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,118 +58,198 @@ public class RemindersFragment extends Fragment {
 
         if (currentUser != null) {
             String userId = currentUser.getUid();
-
-            // Initialize Firebase reference with the current user's userId
-            userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("Reminders");
+            userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("lists");
+            ensureDefaultList();
         } else {
-            // Handle the case when no user is signed in (for example, show a login screen or error)
             Toast.makeText(getActivity(), "User not signed in", Toast.LENGTH_SHORT).show();
         }
-        // Initialize Firebase reference
 
-        // Initialize UI elements
         addReminderButton = rootView.findViewById(R.id.addReminderButton);
         eventsContainer = rootView.findViewById(R.id.eventsContainer);
         searchEditText = rootView.findViewById(R.id.search_bar);
-
-        // Add reminder button click listener
+        listOptions = new ArrayList<>();
+        listAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listOptions);
+        listAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         addReminderButton.setOnClickListener(view -> showAddReminderDialog());
 
-        // Search bar functionality
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No action needed before text changes
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchReminders(s.toString()); // Trigger search as the user types
+                searchReminders(s.toString());
             }
-
             @Override
-            public void afterTextChanged(Editable s) {
-                // No action needed after text changes
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
-        // Load reminders on start
+        loadLists();
         loadReminders();
-
         return rootView;
     }
 
-    // Show the add reminder dialog
-    private void showAddReminderDialog() {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View dialogView = inflater.inflate(R.layout.dialog_add_reminder, null);
-
-        EditText titleEditText = dialogView.findViewById(R.id.reminderTitleEditText);
-        EditText descriptionEditText = dialogView.findViewById(R.id.reminderDescriptionEditText);
-        EditText dateEditText = dialogView.findViewById(R.id.reminderDateEditText);
-        EditText timeEditText = dialogView.findViewById(R.id.reminderTimeEditText);
-        Spinner listSpinner = dialogView.findViewById(R.id.reminderListSpinner);
-        Spinner statusSpinner = dialogView.findViewById(R.id.reminderStatusSpinner);
-
-        // Define the list of options for the spinners
-        String[] reminderOptions = {"Completed", "Scheduled", "Flagged"};
-
-        // Set the array of options to both spinners
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, reminderOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        listSpinner.setAdapter(adapter);
-        statusSpinner.setAdapter(adapter);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(dialogView)
-                .setPositiveButton("Save", (dialogInterface, i) -> {
-                    String title = titleEditText.getText().toString();
-                    String description = descriptionEditText.getText().toString();
-                    String date = dateEditText.getText().toString();
-                    String time = timeEditText.getText().toString();
-                    String list = listSpinner.getSelectedItem().toString();
-                    String status = statusSpinner.getSelectedItem().toString();
-
-                    if (!TextUtils.isEmpty(title)) {
-                        addNewReminder(title, description, time, list, date, status);
-                    } else {
-                        Toast.makeText(getActivity(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss())
-                .create()
-                .show();
+    private void ensureDefaultList() {
+        userRef.child("reminders").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    userRef.child("reminders").setValue("Default reminders list");
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
-    // Add new reminder to Firebase
-    private void addNewReminder(String title, String description, String time, String list, String date, String status) {
-        String reminderId = userRef.push().getKey();
+    private void showAddReminderDialog() {
+        AddReminderDialog dialog = AddReminderDialog.newInstance();
+        dialog.show(getChildFragmentManager(), "AddReminderDialog");
+    }
+
+    public static class AddReminderDialog extends BottomSheetDialogFragment {
+
+        private boolean isFlagged = false;
+        public static AddReminderDialog newInstance() {
+            return new AddReminderDialog();
+        }
+
+        @NonNull
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View dialogView = inflater.inflate(R.layout.dialog_add_reminder, container, false);
+
+            EditText titleEditText = dialogView.findViewById(R.id.title);
+            EditText descriptionEditText = dialogView.findViewById(R.id.notes);
+            TextView dateEditText = dialogView.findViewById(R.id.Date);
+            TextView timeEditText = dialogView.findViewById(R.id.Time);
+            Spinner listSpinner = dialogView.findViewById(R.id.Listreminders);
+            TextView flagButton = dialogView.findViewById(R.id.flag);
+            TextView saveButton = dialogView.findViewById(R.id.add);
+
+            RemindersFragment parentFragment = (RemindersFragment) getParentFragment();
+            if (parentFragment != null) {
+                listSpinner.setAdapter(parentFragment.listAdapter);
+            }
+
+            isFlagged = false;
+            flagButton.setOnClickListener(v -> {
+                isFlagged = !isFlagged;
+                flagButton.setText(isFlagged ? "Flagged" : "Flag");
+            });
+
+            dateEditText.setOnClickListener(v -> openDatePicker(dateEditText));
+            timeEditText.setOnClickListener(v -> openTimePicker(timeEditText));
+
+            saveButton.setOnClickListener(v -> {
+                String title = titleEditText.getText().toString();
+                String description = descriptionEditText.getText().toString();
+                String date = dateEditText.getText().toString();
+                String time = timeEditText.getText().toString();
+                String list = listSpinner.getSelectedItem() != null ? listSpinner.getSelectedItem().toString() : "";
+
+                if (!TextUtils.isEmpty(title)) {
+                    String status = determineStatus(date, time);
+                    if (status.equals("Unscheduled")) {
+                        dateEditText.setText("");
+                        timeEditText.setText("");
+                    }
+                    if (parentFragment != null) {
+                        parentFragment.addNewReminder(list, title, description, date, time, status);
+                    }
+                    dismiss();
+                } else {
+                    Toast.makeText(getActivity(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            return dialogView;
+        }
+
+        private String determineStatus(String date, String time) {
+            if (isFlagged) {
+                return "Flagged";
+            } else if ("Date".equals(date) || "Time".equals(time)) {
+                return "Unscheduled";
+            } else {
+                return "Scheduled";
+            }
+        }
+
+        private void openDatePicker(TextView dateEditText) {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, selectedDay) -> {
+                String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                dateEditText.setText(selectedDate);
+            }, year, month, day);
+
+            datePickerDialog.show();
+        }
+
+        private void openTimePicker(TextView timeEditText) {
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, selectedHour, selectedMinute) -> {
+                String selectedTime = String.format("%02d:%02d", selectedHour, selectedMinute);
+                timeEditText.setText(selectedTime);
+            }, hour, minute, true);
+
+            timePickerDialog.show();
+        }
+    }
+
+
+    private void addNewReminder(String list, String title, String description, String date, String time, String status) {
+        DatabaseReference reminderListRef = userRef.child(list);
+        String reminderId = reminderListRef.push().getKey();
+
         if (reminderId == null) {
             Toast.makeText(getActivity(), "Error generating reminder ID", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        HashMap<String, String> reminderMap = new HashMap<>();
+        HashMap<String, Object> reminderMap = new HashMap<>();
         reminderMap.put("title", title);
         reminderMap.put("description", description);
-        reminderMap.put("time", time);
-        reminderMap.put("list", list);
         reminderMap.put("date", date);
+        reminderMap.put("time", time);
         reminderMap.put("status", status);
 
-        userRef.child(reminderId).setValue(reminderMap).addOnCompleteListener(task -> {
+        reminderListRef.child(reminderId).setValue(reminderMap).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(getActivity(), "Reminder added", Toast.LENGTH_SHORT).show();
-                loadReminders();  // Refresh the reminder list
+                loadReminders();
             } else {
                 Toast.makeText(getActivity(), "Error adding reminder", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Load reminders from Firebase
-    private void loadReminders() {
+    // Load lists from Firebase
+    private void loadLists() {
         userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listOptions.clear();
+                for (DataSnapshot listSnapshot : snapshot.getChildren()) {
+                    listOptions.add(listSnapshot.getKey());
+                }
+                listAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Error loading lists", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadReminders() {
+        userRef.child("reminders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 eventsContainer.removeAllViews();
@@ -173,7 +259,6 @@ public class RemindersFragment extends Fragment {
                     addReminderCard(title, description);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Error loading reminders", Toast.LENGTH_SHORT).show();
@@ -183,70 +268,18 @@ public class RemindersFragment extends Fragment {
 
     // Add a reminder card to the UI
     private void addReminderCard(String title, String description) {
-        // Custom code to add a reminder card to your eventsContainer LinearLayout
-        // Inflate a layout for each reminder and add it to the container
+        View reminderCard = LayoutInflater.from(getActivity()).inflate(R.layout.reminder_card, null);
+
+        TextView titleTextView = reminderCard.findViewById(R.id.reminderTitle);
+        TextView descriptionTextView = reminderCard.findViewById(R.id.reminderDescription);
+
+        titleTextView.setText(title);
+        descriptionTextView.setText(description);
+
+        eventsContainer.addView(reminderCard);
     }
 
-    // Search for reminders in Firebase by title
     private void searchReminders(String query) {
-        userRef.orderByChild("title").startAt(query).endAt(query + "\uf8ff").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                eventsContainer.removeAllViews();
-                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
-                    String title = reminderSnapshot.child("title").getValue(String.class);
-                    String description = reminderSnapshot.child("description").getValue(String.class);
-                    addReminderCard(title, description);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Search failed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Show reminders by their status
-    private void showRemindersByStatus(String status) {
-        userRef.orderByChild("status").equalTo(status).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                eventsContainer.removeAllViews();
-                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
-                    String title = reminderSnapshot.child("title").getValue(String.class);
-                    String description = reminderSnapshot.child("description").getValue(String.class);
-                    addReminderCard(title, description);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error loading reminders", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Mark reminders on the calendar (requires CalendarView and customization)
-    private void showCalendarMarkers() {
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
-                    String date = reminderSnapshot.child("date").getValue(String.class);
-                    markDateOnCalendar(date);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error marking dates", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Mark date on CalendarView (custom method)
-    private void markDateOnCalendar(String date) {
-        // Your logic to mark a date on the CalendarView widget
+        // Implementation for searching reminders based on the title
     }
 }

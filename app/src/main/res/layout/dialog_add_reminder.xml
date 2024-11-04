@@ -1,49 +1,138 @@
-<!-- dialog_add_reminder.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?android:attr/colorBackground">
 
-    <EditText
-        android:id="@+id/reminderTitleEditText"
+    <!-- Top action bar with Cancel and Add options -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title" />
+        android:orientation="horizontal"
+        android:gravity="">
 
-    <EditText
-        android:id="@+id/reminderDescriptionEditText"
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="#007aff"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:clickable="true"
+            android:onClick="onCancel" />
+
+        <TextView
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:textColor="#007aff"
+            android:padding="10dp"
+            android:clickable="true"
+            android:layout_alignParentRight="true"
+            android:onClick="onAdd" />
+    </RelativeLayout>
+
+    <!-- Title and Notes fields inside a card-like container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description" />
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card_background"
+        android:layout_marginTop="8dp"
+        android:elevation="4dp">
 
-    <EditText
-        android:id="@+id/reminderDateEditText"
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:textColorHint="#888"
+            android:background="?android:attr/editTextBackground"
+            android:padding="8dp" />
+
+        <EditText
+            android:id="@+id/notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Notes"
+            android:textColorHint="#888"
+            android:background="?android:attr/editTextBackground"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- Date, Time, Location, and List options inside another card-like container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date (dd-mm-yyyy)" />
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card_background"
+        android:layout_marginTop="8dp"
+        android:elevation="4dp">
 
-    <EditText
-        android:id="@+id/reminderTimeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Time (hh:mm)" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:id="@+id/Date"
+            android:padding="10dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="openDatePicker" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_grey"
+            android:layout_marginBottom="16dp" />
 
-    <Spinner
-        android:id="@+id/reminderListSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="List" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:id="@+id/Time"
+            android:padding="10dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="openTimePicker" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_grey"
+            android:layout_marginBottom="16dp" />
 
-    <Spinner
-        android:id="@+id/reminderStatusSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Status" />
 
-    <Button
-        android:id="@+id/saveReminderButton"
+        <Spinner
+            android:id="@+id/Listreminders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackground" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_grey"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
+
+    <!-- Flag option -->
+    <TextView
+        android:id="@+id/flag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="FLAG"
+        android:textColor="#007aff"
+        android:padding="10dp"
+        android:clickable="true"
+        android:onClick="toggleFlag" />
+
 </LinearLayout>

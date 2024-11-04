@@ -12,7 +12,7 @@
         <item>Pending</item>
         <item>Completed</item>
         <item>Overdue</item>
-        </string-array>
+    </string-array>
     <string-array name="reminderListSpinner">
         <item>Pending</item>
         <item>Completed</item>
