@@ -16,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,11 +41,9 @@ public class RemindersFragment extends Fragment {
     private FloatingActionButton addReminderButton;
     private LinearLayout eventsContainer;
     private EditText searchEditText;
+    private TextView noRemindersTextView; // TextView to show "No reminders found"
     private DatabaseReference userRef;
     private FirebaseAuth mAuth;
-    private ArrayList<String> listOptions;
-    private ArrayAdapter<String> listAdapter;
-    private boolean isFlagged = false;
 
     public RemindersFragment() { }
 
@@ -58,8 +55,7 @@ public class RemindersFragment extends Fragment {
 
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("lists");
-            ensureDefaultList();
+            userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
         } else {
             Toast.makeText(getActivity(), "User not signed in", Toast.LENGTH_SHORT).show();
         }
@@ -67,9 +63,8 @@ public class RemindersFragment extends Fragment {
         addReminderButton = rootView.findViewById(R.id.addReminderButton);
         eventsContainer = rootView.findViewById(R.id.eventsContainer);
         searchEditText = rootView.findViewById(R.id.search_bar);
-        listOptions = new ArrayList<>();
-        listAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listOptions);
-        listAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        noRemindersTextView = rootView.findViewById(R.id.noRemindersTextView); // Ensure this is defined in your XML
+
         addReminderButton.setOnClickListener(view -> showAddReminderDialog());
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -77,28 +72,34 @@ public class RemindersFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchReminders(s.toString());
+                String query = s.toString();
+                toggleVisibility(!query.isEmpty());
+                searchReminders(query);
             }
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
-        loadLists();
         loadReminders();
+        setupButtonListeners(rootView);
         return rootView;
     }
 
-    private void ensureDefaultList() {
-        userRef.child("reminders").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
-                    userRef.child("reminders").setValue("Default reminders list");
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
+    private void setupButtonListeners(View rootView) {
+        rootView.findViewById(R.id.todaybutton).setOnClickListener(v -> openFragment(new TodayReminderFragment()));
+        rootView.findViewById(R.id.scheduledbutton).setOnClickListener(v -> openFragment(new ScheduledReminderFragment()));
+        rootView.findViewById(R.id.allbutton).setOnClickListener(v -> openFragment(new AllReminderFragment()));
+        rootView.findViewById(R.id.flaggedbutton).setOnClickListener(v -> openFragment(new FlagReminderFragment()));
+        rootView.findViewById(R.id.completedbutton).setOnClickListener(v -> openFragment(new CompletedReminderFragment()));
+    }
+
+    private void openFragment(Fragment fragment) {
+        if (fragment != null) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     private void showAddReminderDialog() {
@@ -107,8 +108,8 @@ public class RemindersFragment extends Fragment {
     }
 
     public static class AddReminderDialog extends BottomSheetDialogFragment {
-
         private boolean isFlagged = false;
+
         public static AddReminderDialog newInstance() {
             return new AddReminderDialog();
         }
@@ -117,21 +118,17 @@ public class RemindersFragment extends Fragment {
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View dialogView = inflater.inflate(R.layout.dialog_add_reminder, container, false);
-
             EditText titleEditText = dialogView.findViewById(R.id.title);
+            TextView cancelbutton = dialogView.findViewById(R.id.cancel);
             EditText descriptionEditText = dialogView.findViewById(R.id.notes);
             TextView dateEditText = dialogView.findViewById(R.id.Date);
             TextView timeEditText = dialogView.findViewById(R.id.Time);
-            Spinner listSpinner = dialogView.findViewById(R.id.Listreminders);
             TextView flagButton = dialogView.findViewById(R.id.flag);
             TextView saveButton = dialogView.findViewById(R.id.add);
 
-            RemindersFragment parentFragment = (RemindersFragment) getParentFragment();
-            if (parentFragment != null) {
-                listSpinner.setAdapter(parentFragment.listAdapter);
-            }
-
+            cancelbutton.setOnClickListener(v -> dismiss());
             isFlagged = false;
+
             flagButton.setOnClickListener(v -> {
                 isFlagged = !isFlagged;
                 flagButton.setText(isFlagged ? "Flagged" : "Flag");
@@ -145,7 +142,6 @@ public class RemindersFragment extends Fragment {
                 String description = descriptionEditText.getText().toString();
                 String date = dateEditText.getText().toString();
                 String time = timeEditText.getText().toString();
-                String list = listSpinner.getSelectedItem() != null ? listSpinner.getSelectedItem().toString() : "";
 
                 if (!TextUtils.isEmpty(title)) {
                     String status = determineStatus(date, time);
@@ -153,8 +149,8 @@ public class RemindersFragment extends Fragment {
                         dateEditText.setText("");
                         timeEditText.setText("");
                     }
-                    if (parentFragment != null) {
-                        parentFragment.addNewReminder(list, title, description, date, time, status);
+                    if (getParentFragment() != null) {
+                        ((RemindersFragment) getParentFragment()).addNewReminder(title, description, date, time, status);
                     }
                     dismiss();
                 } else {
@@ -203,9 +199,8 @@ public class RemindersFragment extends Fragment {
         }
     }
 
-
-    private void addNewReminder(String list, String title, String description, String date, String time, String status) {
-        DatabaseReference reminderListRef = userRef.child(list);
+    private void addNewReminder(String title, String description, String date, String time, String status) {
+        DatabaseReference reminderListRef = userRef.child("reminders");
         String reminderId = reminderListRef.push().getKey();
 
         if (reminderId == null) {
@@ -230,35 +225,32 @@ public class RemindersFragment extends Fragment {
         });
     }
 
-    // Load lists from Firebase
-    private void loadLists() {
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listOptions.clear();
-                for (DataSnapshot listSnapshot : snapshot.getChildren()) {
-                    listOptions.add(listSnapshot.getKey());
-                }
-                listAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error loading lists", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
+    // Load reminders from Firebase
     private void loadReminders() {
-        userRef.child("reminders").addValueEventListener(new ValueEventListener() {
+        userRef.child("reminders").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                eventsContainer.removeAllViews();
+                eventsContainer.removeAllViews(); // Clear previous views
                 for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
                     String title = reminderSnapshot.child("title").getValue(String.class);
                     String description = reminderSnapshot.child("description").getValue(String.class);
-                    addReminderCard(title, description);
+                    String date = reminderSnapshot.child("date").getValue(String.class);
+                    String time = reminderSnapshot.child("time").getValue(String.class);
+                    String status = reminderSnapshot.child("status").getValue(String.class);
+
+                    // Inflate your reminder view here and add it to eventsContainer
+                    View cardView = LayoutInflater.from(getActivity()).inflate(R.layout.reminder_card, eventsContainer, false);
+                    TextView titleView = cardView.findViewById(R.id.reminderTitle);
+                    TextView descriptionView = cardView.findViewById(R.id.reminderDescription);
+
+                    titleView.setText(title);
+                    descriptionView.setText(description);
+
+                    eventsContainer.addView(cardView);
                 }
+                noRemindersTextView.setVisibility(snapshot.exists() ? View.GONE : View.VISIBLE); // Show or hide the "No reminders found" message
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Error loading reminders", Toast.LENGTH_SHORT).show();
@@ -266,20 +258,56 @@ public class RemindersFragment extends Fragment {
         });
     }
 
-    // Add a reminder card to the UI
-    private void addReminderCard(String title, String description) {
-        View reminderCard = LayoutInflater.from(getActivity()).inflate(R.layout.reminder_card, null);
+    private void searchReminders(String query) {
+        // Clear the previous views
+        eventsContainer.removeAllViews();
 
-        TextView titleTextView = reminderCard.findViewById(R.id.reminderTitle);
-        TextView descriptionTextView = reminderCard.findViewById(R.id.reminderDescription);
+        // Load reminders from Firebase
+        userRef.child("reminders").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean found = false; // Flag to check if any reminders matched
+                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                    String title = reminderSnapshot.child("title").getValue(String.class);
+                    String description = reminderSnapshot.child("description").getValue(String.class);
 
-        titleTextView.setText(title);
-        descriptionTextView.setText(description);
+                    if ((title != null && title.toLowerCase().contains(query.toLowerCase())) ||
+                            (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
 
-        eventsContainer.addView(reminderCard);
+                        View cardView = LayoutInflater.from(getActivity()).inflate(R.layout.reminder_card, eventsContainer, false);
+                        TextView titleView = cardView.findViewById(R.id.reminderTitle);
+                        TextView descriptionView = cardView.findViewById(R.id.reminderDescription);
+
+                        titleView.setText(title);
+                        descriptionView.setText(description);
+
+                        eventsContainer.addView(cardView);
+                        found = true; // Found a matching reminder
+                    }
+                }
+                if (!found && !TextUtils.isEmpty(query)) {
+                    noRemindersTextView.setVisibility(View.VISIBLE);
+                } else {
+                    noRemindersTextView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Error loading reminders", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void searchReminders(String query) {
-        // Implementation for searching reminders based on the title
+    private void toggleVisibility(boolean isSearching) {
+        // Toggle the visibility of the buttons and other elements
+        int visibility = isSearching ? View.GONE : View.VISIBLE;
+        getView().findViewById(R.id.todaybutton).setVisibility(visibility);
+        getView().findViewById(R.id.scheduledbutton).setVisibility(visibility);
+        getView().findViewById(R.id.allbutton).setVisibility(visibility);
+        getView().findViewById(R.id.flaggedbutton).setVisibility(visibility);
+        getView().findViewById(R.id.calendarView).setVisibility(visibility);
+        getView().findViewById(R.id.completedbutton).setVisibility(visibility);
+        noRemindersTextView.setVisibility(isSearching ? View.VISIBLE : View.GONE);
     }
 }

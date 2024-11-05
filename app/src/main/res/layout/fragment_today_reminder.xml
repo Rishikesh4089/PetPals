@@ -1,14 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".TodayReminderFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Title Heading -->
     <TextView
+        android:id="@+id/todayReminderHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="16dp"
+        android:text="Today"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <!-- RecyclerView for displaying reminder cards -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todayReminderRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-</FrameLayout>
+        android:layout_below="@id/todayReminderHeading"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:paddingTop="8dp"
+        tools:listitem="@layout/reminder_card" />
+</RelativeLayout>

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <fragment
@@ -9,6 +10,37 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="200dp" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue"
+        app:tabIconTint="@color/white"
+        app:tabTextColor="@color/dark_blue"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_park"
+            android:icon="@drawable/ic_park"
+            android:text="Park"
+            android:layout_height="30dp"
+            android:layout_width="30dp"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_vet"
+            android:icon="@drawable/ic_vet"
+            android:text="Vet"
+            android:layout_height="30dp"
+            android:layout_width="30dp"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_grooming"
+            android:icon="@drawable/ic_grooming"
+            android:text="Grooming"
+            android:layout_height="30dp"
+            android:layout_width="30dp"/>
+    </com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -7,21 +7,21 @@
 
     <!-- Title Heading -->
     <TextView
-        android:id="@+id/scheduledReminderHeading"
+        android:id="@+id/completeReminderHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:layout_marginTop="16dp"
-        android:text="Scheduled Reminders"
+        android:text="Completed Reminders"
         android:textSize="28sp"
         android:textStyle="bold" />
 
     <!-- RecyclerView for displaying reminder cards -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/scheduledReminderRecyclerView"
+        android:id="@+id/completeReminderRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/scheduledReminderHeading"
+        android:layout_below="@id/completeReminderHeading"
         android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"

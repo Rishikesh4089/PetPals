@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".Remindersfragment">
+    tools:context=".RemindersFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -67,6 +67,7 @@
                 <!-- Today button -->
                 <LinearLayout
                     android:layout_width="0dp"
+                    android:id="@+id/todaybutton"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:background="@drawable/card_background"
@@ -92,6 +93,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:id="@+id/scheduledbutton"
                     android:layout_columnWeight="1"
                     android:background="@drawable/card_background"
                     android:padding="16dp"
@@ -119,6 +121,7 @@
                     android:layout_columnWeight="1"
                     android:background="@drawable/card_background"
                     android:padding="16dp"
+                    android:id="@+id/allbutton"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -141,6 +144,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
+                    android:id="@+id/flaggedbutton"
                     android:background="@drawable/card_background"
                     android:padding="16dp"
                     android:gravity="center_vertical">
@@ -163,6 +167,7 @@
                 <!-- Completed button -->
                 <LinearLayout
                     android:layout_width="0dp"
+                    android:id="@+id/completedbutton"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:background="@drawable/card_background"
@@ -184,42 +189,6 @@
                         android:layout_marginStart="8dp" />
                 </LinearLayout>
             </GridLayout>
-
-            <!-- My Lists section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:gravity="start">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="My Lists"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/dark_blue"
-                    android:layout_weight="1" />
-
-                <!-- Add List Text Link -->
-                <TextView
-                    android:id="@+id/addListTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add List"
-                    android:textColor="#03A9F4"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Reminder lists -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/reminderList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/card_background"
-                android:padding="8dp" />
 
             <!-- Events Container -->
             <LinearLayout
@@ -256,6 +225,4 @@
         app:tint="@android:color/white"
         android:backgroundTint="@color/blue"
         />
-
-
 </RelativeLayout>

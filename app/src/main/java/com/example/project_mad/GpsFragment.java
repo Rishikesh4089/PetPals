@@ -10,12 +10,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,10 +30,13 @@ import java.util.List;
 public class GpsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private List<Location> locationList; // Changed to use your Location class
-    private LocationAdapter locationAdapter; // Adapter for RecyclerView
+    private List<Location> locationList;
+    private LocationAdapter locationAdapter;
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
+    private TabLayout tabLayout;
+
+    private String selectedType = "park"; // Default type to display on start
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -45,25 +50,66 @@ public class GpsFragment extends Fragment implements OnMapReadyCallback {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Set up the TabLayout
+        tabLayout = view.findViewById(R.id.tabLayout);
+        setupTabLayout();
+
         // Initialize Firebase reference
         databaseReference = FirebaseDatabase.getInstance().getReference("Locations");
 
         // Fetch data from Firebase
+        fetchLocations();
+
+        // Set up the map
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+
+        return view;
+    }
+
+    private void setupTabLayout() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        selectedType = "park";
+                        break;
+                    case 1:
+                        selectedType = "vet";
+                        break;
+                    case 2:
+                        selectedType = "grooming";
+                        break;
+                }
+                fetchLocations();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
+
+    private void fetchLocations() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                locationList.clear(); // Clear the list before adding new data
+                locationList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Location location = snapshot.getValue(Location.class);
-                    if (location != null) {
+                    if (location != null && location.getType().equalsIgnoreCase(selectedType)) {
                         locationList.add(location);
                     }
                 }
-                // Set up adapter with the fetched data
-                locationAdapter = new LocationAdapter(locationList, getContext(), GpsFragment.this::onLocationClick);
-                recyclerView.setAdapter(locationAdapter);
-
-                // Update the map with the new locations
+                updateRecyclerView();
                 if (mMap != null) {
                     updateMapMarkers();
                 }
@@ -74,15 +120,11 @@ public class GpsFragment extends Fragment implements OnMapReadyCallback {
                 // Handle possible errors
             }
         });
+    }
 
-        // Set up the map
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
-
-        return view;
+    private void updateRecyclerView() {
+        locationAdapter = new LocationAdapter(locationList, getContext(), GpsFragment.this::onLocationClick);
+        recyclerView.setAdapter(locationAdapter);
     }
 
     private void onLocationClick(Location location) {
@@ -98,7 +140,7 @@ public class GpsFragment extends Fragment implements OnMapReadyCallback {
         // Create a new fragment to show location details
         LocationDetailsFragment detailFragment = LocationDetailsFragment.newInstance(location);
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, detailFragment) // Assuming your main container ID is fragment_container
+                .replace(R.id.fragment_container, detailFragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -106,17 +148,15 @@ public class GpsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        updateMapMarkers(); // Update the map with existing locations when ready
+        updateMapMarkers();
     }
 
     private void updateMapMarkers() {
-        // Clear existing markers before adding new ones
         mMap.clear();
         for (Location location : locationList) {
             mMap.addMarker(new MarkerOptions().position(location.getLatLng()).title(location.getName()));
         }
 
-        // Move the camera to the first location if the list is not empty
         if (!locationList.isEmpty()) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationList.get(0).getLatLng(), 12));
         }

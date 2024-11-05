@@ -7,23 +7,23 @@ import com.google.android.gms.maps.model.LatLng;
 public class Location implements Parcelable {
     private String name;
     private String address;
-    private String photo; // URL or resource ID for the photo
+    private String photo;
     private double latitude;
     private double longitude;
+    private String type;
 
-    // Default constructor required for calls to DataSnapshot.getValue(Location.class)
     public Location() {
     }
 
-    public Location(String name, String address, String photo, double latitude, double longitude) {
+    public Location(String name, String address, String photo, double latitude, double longitude, String type) {
         this.name = name;
         this.address = address;
         this.photo = photo;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.type = type;
     }
 
-    // Getters
     public String getName() {
         return name;
     }
@@ -44,12 +44,12 @@ public class Location implements Parcelable {
         return longitude;
     }
 
-    // Method to get LatLng object
+    public String getType() {return type;}
+
     public LatLng getLatLng() {
         return new LatLng(latitude, longitude);
     }
 
-    // Parcelable implementation
     protected Location(Parcel in) {
         name = in.readString();
         address = in.readString();
