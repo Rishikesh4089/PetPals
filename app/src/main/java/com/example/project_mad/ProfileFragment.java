@@ -105,7 +105,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveProfile() {
-        // Save profile data to Firebase Realtime Database
+        // Retrieve current profile data
         String ownerNameStr = ownerName.getText().toString();
         String ownerAgeStr = ownerAge.getText().toString();
         String addressStr = address.getText().toString();
@@ -118,32 +118,87 @@ public class ProfileFragment extends Fragment {
         String genderStr = gender.getCheckedRadioButtonId() == R.id.radioMale ? "Male" : "Female";
         String petGenderStr = petGender.getCheckedRadioButtonId() == R.id.radioPetMale ? "Male" : "Female";
 
-        // Create a profile object
-        UserProfile profile = new UserProfile(ownerNameStr, ownerAgeStr, addressStr, phoneStr, genderStr,
-                petNameStr, petTypeStr, petAgeStr, petGenderStr, breedStr, null);
+        // Create a profile object to hold updated data
+        UserProfile updatedProfile = new UserProfile(
+                ownerNameStr,
+                ownerAgeStr,
+                addressStr,
+                phoneStr,
+                genderStr,
+                petNameStr,
+                petTypeStr,
+                petAgeStr,
+                petGenderStr,
+                breedStr,
+                null // Pet image URL, to be updated separately
+        );
 
-        // Save profile data to the database
-        databaseReference.child("users").child(userId).setValue(profile)
-                .addOnSuccessListener(aVoid -> {
-                    if (imageUri != null) {
-                        // Upload the image to Firebase Storage
-                        StorageReference fileReference = storageReference.child(userId + ".jpg");
-                        fileReference.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                                        // Save the image URL with the userId in the database
-                                        databaseReference.child("users").child(userId).child("petImageUrl").setValue(uri.toString())
-                                                .addOnSuccessListener(aVoid1 -> Toast.makeText(getContext(), "Profile saved successfully", Toast.LENGTH_SHORT).show())
-                                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        // Check and update only the fields that were modified
+        if (!ownerNameStr.equals("") && !ownerNameStr.equals(ownerName.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("ownerName").setValue(ownerNameStr);
+        }
+
+        if (!ownerAgeStr.equals("") && !ownerAgeStr.equals(ownerAge.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("ownerAge").setValue(ownerAgeStr);
+        }
+
+        if (!addressStr.equals("") && !addressStr.equals(address.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("address").setValue(addressStr);
+        }
+
+        if (!phoneStr.equals("") && !phoneStr.equals(phone.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("phone").setValue(phoneStr);
+        }
+
+        if (!petNameStr.equals("") && !petNameStr.equals(petName.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("petName").setValue(petNameStr);
+        }
+
+        if (!petAgeStr.equals("") && !petAgeStr.equals(petAge.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("petAge").setValue(petAgeStr);
+        }
+
+        if (!petTypeStr.equals("") && !petTypeStr.equals(petType.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("petType").setValue(petTypeStr);
+        }
+
+        if (!breedStr.equals("") && !breedStr.equals(breed.getHint().toString())) {
+            databaseReference.child("users").child(userId).child("breed").setValue(breedStr);
+        }
+
+        // Update gender and pet gender based on user selection
+        if (!genderStr.equals("")) {
+            databaseReference.child("users").child(userId).child("gender").setValue(genderStr);
+        }
+
+        if (!petGenderStr.equals("")) {
+            databaseReference.child("users").child(userId).child("petGender").setValue(petGenderStr);
+        }
+
+        // If image was selected, upload it to Firebase
+        if (imageUri != null) {
+            StorageReference fileReference = storageReference.child(userId + ".jpg");
+            fileReference.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            // Save the image URL with the userId in the database
+                            databaseReference.child("users").child(userId).child("petImageUrl").setValue(uri.toString())
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(getContext(), "Failed to save profile image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     });
-                                })
-                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                    } else {
-                        Toast.makeText(getContext(), "Profile saved successfully", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void loadProfile() {
         databaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {

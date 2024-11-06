@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:padding="16dp"
     android:background="@color/white">
@@ -24,45 +25,61 @@
             android:layout_marginBottom="16dp" />
 
         <!-- Progress Card -->
+        <!-- Welcome Banner with Pet Photo -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/progressCard"
+            android:id="@+id/bannerCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:background="@color/light_blue"
+            android:elevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/progressLabel"
+                <!-- Pet Image -->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/photoImageView"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/ic_launcher_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Vertical Layout for Welcome Messages -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Daily Exercise Progress"
-                    android:textSize="18sp"
-                    android:textColor="@color/dark_blue"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="16dp">
 
-                <ProgressBar
-                    android:id="@+id/circularProgressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:progressDrawable="@drawable/circular_progress"
-                    android:progress="60"
-                    android:layout_marginBottom="8dp" />
+                    <TextView
+                        android:id="@+id/welcomeMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Welcome back, !"
+                        android:textSize="22sp"
+                        android:textColor="@color/dark_blue"
+                        android:gravity="center_vertical" />
 
-                <TextView
-                    android:id="@+id/progressText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="60% completed"
-                    android:textColor="@color/dark_blue"
-                    android:layout_gravity="center_horizontal" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Have a great day full of fun and woofs!"
+                        android:textSize="16sp"
+                        android:textColor="@color/dark_blue" />
+
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+
 
         <!-- Calendar View Card -->
         <androidx.cardview.widget.CardView

@@ -1,26 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".HealthFragment">
 
-    <!-- Health TextView -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Health"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"
-        android:textColor="#000000" />
-
-    <!-- BottomNavigationView -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <!-- Main Linear Layout to contain all items -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_menu" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</RelativeLayout>
+        <!-- Header -->
+        <TextView
+            android:id="@+id/healthDietHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Health and Diet"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark_blue"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center" />
+
+        <!-- Linear Layout to contain the cards -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <!-- Health Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardHealth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/healthcard"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/healthImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:src="@drawable/vet_image" /> <!-- Replace with actual image -->
+
+                    <TextView
+                        android:id="@+id/healthTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Health"
+                        android:textSize="18sp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center" />
+
+                    <!-- Health Description -->
+                    <TextView
+                        android:id="@+id/healthDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tips for maintaining optimal health for your pet."
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Diet Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDiet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:id="@+id/dietcard"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/dietImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:src="@drawable/pet_diet" /> <!-- Replace with actual image -->
+
+                    <TextView
+                        android:id="@+id/dietTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Diet"
+                        android:textSize="18sp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center" />
+
+                    <!-- Diet Description -->
+                    <TextView
+                        android:id="@+id/dietDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A balanced diet to support your pet's wellness."
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

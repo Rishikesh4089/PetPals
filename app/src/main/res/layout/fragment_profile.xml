@@ -22,7 +22,7 @@
                 android:orientation="vertical"
                 android:gravity="center">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/petProfileImage"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
