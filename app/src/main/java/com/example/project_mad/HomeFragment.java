@@ -83,8 +83,8 @@ public class HomeFragment extends Fragment {
                     welcomeMessage.setText("Welcome back, " + petName + "!");
 
                     if (petImageUrl != null) {
-                        // Load the image from the URL using Glide
-                        Glide.with(this)
+                        // Load the image from the URL using Glide with requireContext()
+                        Glide.with(requireContext())
                                 .load(petImageUrl)
                                 .placeholder(R.drawable.ic_default_pet_image) // Optional placeholder image
                                 .error(R.drawable.ic_default_pet_image)       // Error image if loading fails
@@ -94,6 +94,7 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 
 
     private void loadTodayReminders() {

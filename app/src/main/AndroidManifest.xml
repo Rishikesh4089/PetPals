@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Project_mad"
         tools:targetApi="31">
         <activity
+            android:name=".InfoDisplayFragment"
+            android:exported="false" />
+        <activity
             android:name=".ResetPasswordActivity"
             android:exported="false" />
 
