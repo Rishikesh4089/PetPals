@@ -1,6 +1,8 @@
 package com.example.project_mad;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ public class TodayReminderFragment extends Fragment {
     private List<Reminder> reminderList;
     private FirebaseAuth mAuth;
     private DatabaseReference remindersRef;
+    private TextView noRemindersTextView;
 
     @Nullable
     @Override
@@ -49,6 +52,8 @@ public class TodayReminderFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+
+        noRemindersTextView = rootView.findViewById(R.id.noRemindersTextView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -115,10 +120,6 @@ public class TodayReminderFragment extends Fragment {
             return date;
         }
 
-        public String getTime() {
-            return time;
-        }
-
         public void setKey(String key){
             this.key = key;
         }
@@ -149,20 +150,20 @@ public class TodayReminderFragment extends Fragment {
             holder.reminderTitle.setText(reminder.getTitle());
             holder.reminderDescription.setText(reminder.getDescription());
 
-            holder.checkBox.setChecked(reminder.getStatus().equals("completed"));
+            // Set initial checkbox state and styling
+            boolean isCompleted = reminder.getStatus().equals("completed");
+            holder.checkBox.setChecked(isCompleted);
+            holder.checkBox.setEnabled(!isCompleted); // Disable checkbox if status is completed
+            holder.checkBox.setButtonTintList(isCompleted ?
+                    ColorStateList.valueOf(Color.GRAY) : ColorStateList.valueOf(Color.BLACK));
 
             holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                String newStatus;
-                if (isChecked) {
-                    // When checked, set status to "completed"
+                if (!isCompleted && isChecked) { // Only allow check action once
                     reminder.setStatus("completed");
-                    newStatus = "completed";
-                } else {
-                    // When unchecked, revert to oldStatus
-                    newStatus = reminder.getOldStatus();
-                    reminder.setStatus(newStatus);
+                    holder.checkBox.setEnabled(false); // Disable checkbox after completion
+                    holder.checkBox.setButtonTintList(ColorStateList.valueOf(Color.GRAY)); // Set to gray color
+                    updateReminderStatus(reminder, "completed");
                 }
-                updateReminderStatus(reminder, newStatus);
             });
         }
 
@@ -222,6 +223,12 @@ public class TodayReminderFragment extends Fragment {
                     }
                 }
                 adapter.notifyDataSetChanged();
+
+                if (reminderList.isEmpty()) {
+                    noRemindersTextView.setVisibility(View.VISIBLE);
+                } else {
+                    noRemindersTextView.setVisibility(View.GONE);
+                }
             }
 
             @Override

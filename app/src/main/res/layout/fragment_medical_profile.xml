@@ -105,7 +105,7 @@
         <Button
             android:id="@+id/save_medical_profile_button"
             android:layout_width="match_parent"
-            android:background="@color/blue"
+            android:background="@drawable/button_rounded_background"
             android:backgroundTint="@color/blue"
             android:textColor="@color/white"
             android:layout_height="wrap_content"

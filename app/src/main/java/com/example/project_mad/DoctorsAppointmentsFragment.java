@@ -43,6 +43,7 @@ import java.util.List;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class DoctorsAppointmentsFragment extends Fragment {
 
@@ -53,6 +54,7 @@ public class DoctorsAppointmentsFragment extends Fragment {
     private DatabaseReference appointmentsRef;
     private FloatingActionButton addAppointmentFab;
     private ViewGroup tooltipContainer;
+    private Button tooltip_close_button;
 
     @Nullable
     @Override
@@ -65,6 +67,7 @@ public class DoctorsAppointmentsFragment extends Fragment {
         adapter = new AppointmentAdapter(appointmentList, this::deleteAppointment);
 
         tooltipContainer = rootView.findViewById(R.id.tooltip_container);
+
 
         showTooltip();
 
@@ -93,10 +96,17 @@ public class DoctorsAppointmentsFragment extends Fragment {
         tooltipContainer.addView(tooltipView);
         tooltipContainer.setVisibility(View.VISIBLE);
 
+        tooltipView.findViewById(R.id.tooltip_close_button)
+                .setOnClickListener(v -> {
+                    tooltipContainer.setVisibility(View.GONE);
+                    tooltipContainer.removeView(tooltipView);
+                });
+
+
+
         TextView tooltipMessage = tooltipView.findViewById(R.id.tooltip_message);
 
-        // Set up "medical profile" as a clickable link within the tooltip text
-        String tooltipText = "Set up your medical profile and add a link to open that page";
+        String tooltipText = "Set up your medical profile to help understand your friend better";
         SpannableString spannableString = new SpannableString(tooltipText);
 
         int start = tooltipText.indexOf("medical profile");
@@ -113,13 +123,11 @@ public class DoctorsAppointmentsFragment extends Fragment {
             }
         };
 
-        // Set the clickable span and customize the appearance
         spannableString.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tooltipMessage.setText(spannableString);
         tooltipMessage.setMovementMethod(LinkMovementMethod.getInstance());
         tooltipMessage.setLinkTextColor(ContextCompat.getColor(getContext(), R.color.blue));
 
-        // Remove the tooltip after a delay (5-7 seconds)
         new Handler().postDelayed(() -> {
             tooltipContainer.setVisibility(View.GONE);
             tooltipContainer.removeView(tooltipView);
@@ -153,11 +161,14 @@ public class DoctorsAppointmentsFragment extends Fragment {
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
                     (view, selectedYear, selectedMonth, selectedDay) -> {
-                        selectedDate = selectedYear + "-" + String.format("%02d", selectedMonth + 1) + "-" + String.format("%02d", selectedDay);
-                        selectDateButton.setText(selectedDate);
+                        // Format the selected date as dd/MM/yyyy
+                        String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                        selectedDate = formattedDate;
+                        selectDateButton.setText(formattedDate);
                     }, year, month, day);
             datePickerDialog.show();
         });
+
 
         selectTimeButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();

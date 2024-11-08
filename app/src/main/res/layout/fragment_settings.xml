@@ -64,19 +64,6 @@
                 android:focusable="true"
                 android:background="?android:attr/selectableItemBackground" />
 
-            <TextView
-                android:id="@+id/addAccountLink"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="Add Account"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp"
-                android:paddingTop="10dp"
-                style="@style/CustomTextStyle"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackground" />
 
             <TextView
                 android:id="@+id/deleteAccountLink"

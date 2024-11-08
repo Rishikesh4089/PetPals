@@ -27,4 +27,14 @@
         android:layout_marginEnd="8dp"
         android:paddingTop="8dp"
         tools:listitem="@layout/reminder_card" />
+
+    <TextView
+        android:id="@+id/noRemindersTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="No reminders"
+        android:textSize="20sp"
+        android:textColor="@android:color/darker_gray"
+        android:visibility="gone" />
 </RelativeLayout>

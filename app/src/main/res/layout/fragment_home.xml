@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
     android:padding="16dp"
     android:background="@color/white">
@@ -134,12 +135,40 @@
                     android:textColor="@color/dark_blue"
                     android:layout_marginBottom="8dp" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reminderRecyclerView"
+                    android:layout_width="match_parent"
+                    tools:listitem="@layout/reminder_item"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/appointmentCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
                 <TextView
-                    android:id="@+id/reminderText"
+                    android:id="@+id/appointmentLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Feed the pet at 9:00 AM"
-                    android:textColor="@color/blue" />
+                    android:text="Today's Appointments"
+                    android:textSize="18sp"
+                    android:textColor="@color/dark_blue"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/appointmentRecyclerView"
+                    tools:listitem="@layout/appointment_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

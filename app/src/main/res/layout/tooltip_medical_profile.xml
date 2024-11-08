@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Set up your medical profile and add a link to open that page"
+        android:text="Set up your medical profile to help doctors understand your friend better!"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 

@@ -1,6 +1,8 @@
 package com.example.project_mad;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,7 @@ public class FlagReminderFragment extends Fragment {
     private ReminderAdapter adapter;
     private List<Reminder> reminderList;
     private FirebaseAuth mAuth;
+    private TextView noRemindersView;
     private DatabaseReference remindersRef;
 
     @Nullable
@@ -46,6 +49,8 @@ public class FlagReminderFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+
+        noRemindersView = rootView.findViewById(R.id.noRemindersTextView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -121,18 +126,27 @@ public class FlagReminderFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ReminderViewHolder holder, int position) {
-            Reminder reminder = reminderList.get(position);
+            FlagReminderFragment.Reminder reminder = reminderList.get(position);
             holder.reminderTitle.setText(reminder.getTitle());
             holder.reminderDescription.setText(reminder.getDescription());
 
-            // Set the checkbox state based on the reminder status
-            holder.checkBox.setChecked(reminder.getStatus().equals("completed"));
-
-            holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                // Update the status in Firebase when the checkbox is clicked
-                String newStatus = isChecked ? "completed" : "flagged";
-                updateReminderStatus(reminder, newStatus);
-            });
+            // Set the checkbox state and disable it if the reminder is completed
+            if (reminder.getStatus().equals("completed")) {
+                holder.checkBox.setChecked(true);
+                holder.checkBox.setEnabled(false); // Disable checkbox
+                holder.checkBox.setButtonTintList(ColorStateList.valueOf(
+                        "completed".equals(reminder.getStatus()) ? Color.GRAY : Color.BLACK
+                )); // Set to grey
+            } else {
+                holder.checkBox.setChecked(false);
+                holder.checkBox.setEnabled(true); // Enable checkbox if status is "scheduled"
+                holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        // Update the status in Firebase to "completed"
+                        updateReminderStatus(reminder, "completed");
+                    }
+                });
+            }
         }
 
         @Override
@@ -184,6 +198,12 @@ public class FlagReminderFragment extends Fragment {
                             }
                         }
                         adapter.notifyDataSetChanged();
+
+                        if (reminderList.isEmpty()) {
+                            noRemindersView.setVisibility(View.VISIBLE);
+                        } else {
+                            noRemindersView.setVisibility(View.GONE);
+                        }
                     }
 
                     @Override

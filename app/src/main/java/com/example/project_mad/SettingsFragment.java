@@ -51,10 +51,6 @@ public class SettingsFragment extends Fragment {
         TextView resetPasswordLink = view.findViewById(R.id.resetPasswordLink);
         resetPasswordLink.setOnClickListener(v -> openSelectedFragment("resetPassword"));
 
-        // Handle Add Account link click
-        TextView addAccountLink = view.findViewById(R.id.addAccountLink);
-        addAccountLink.setOnClickListener(v -> openSelectedFragment("addAccount"));
-
         // Handle Delete Account link click
         TextView deleteAccountLink = view.findViewById(R.id.deleteAccountLink);
         deleteAccountLink.setOnClickListener(v -> openSelectedFragment("deleteAccount"));
@@ -83,9 +79,6 @@ public class SettingsFragment extends Fragment {
                     startActivity(intent);
                     getActivity().finish();
                 }
-                return;
-            case "addAccount":
-                Toast.makeText(getActivity(), "Add Account Clicked", Toast.LENGTH_SHORT).show();
                 return;
             case "deleteAccount":
                 // Show the delete confirmation dialog

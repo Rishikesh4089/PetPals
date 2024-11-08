@@ -36,10 +36,14 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/white"
-                    android:background="@drawable/bottom_background"
                     android:layout_marginTop="10dp"
-                    android:text="Select Profile Image" />
+                    android:drawableLeft="@drawable/profile_image"
+                    android:text="Profile Image"
+                    android:textColor="@color/white"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/white"
+                    android:background="@drawable/button_rounded_background" />
+
 
             </LinearLayout>
 
