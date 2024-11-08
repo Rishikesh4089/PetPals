@@ -1,17 +1,25 @@
 package com.example.project_mad;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +52,7 @@ public class DoctorsAppointmentsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference appointmentsRef;
     private FloatingActionButton addAppointmentFab;
+    private ViewGroup tooltipContainer;
 
     @Nullable
     @Override
@@ -54,6 +63,10 @@ public class DoctorsAppointmentsFragment extends Fragment {
         addAppointmentFab = rootView.findViewById(R.id.add_appointment_fab);
         appointmentList = new ArrayList<>();
         adapter = new AppointmentAdapter(appointmentList, this::deleteAppointment);
+
+        tooltipContainer = rootView.findViewById(R.id.tooltip_container);
+
+        showTooltip();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -71,6 +84,46 @@ public class DoctorsAppointmentsFragment extends Fragment {
 
         addAppointmentFab.setOnClickListener(v -> showAddAppointmentDialog());
         return rootView;
+    }
+
+    private void showTooltip() {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View tooltipView = inflater.inflate(R.layout.tooltip_medical_profile, tooltipContainer, false);
+
+        tooltipContainer.addView(tooltipView);
+        tooltipContainer.setVisibility(View.VISIBLE);
+
+        TextView tooltipMessage = tooltipView.findViewById(R.id.tooltip_message);
+
+        // Set up "medical profile" as a clickable link within the tooltip text
+        String tooltipText = "Set up your medical profile and add a link to open that page";
+        SpannableString spannableString = new SpannableString(tooltipText);
+
+        int start = tooltipText.indexOf("medical profile");
+        int end = start + "medical profile".length();
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                // Open MedicalProfileFragment when "medical profile" is clicked
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, new MedicalProfileFragment());
+                transaction.addToBackStack(null); // Ensures back button returns here
+                transaction.commit();
+            }
+        };
+
+        // Set the clickable span and customize the appearance
+        spannableString.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tooltipMessage.setText(spannableString);
+        tooltipMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        tooltipMessage.setLinkTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+
+        // Remove the tooltip after a delay (5-7 seconds)
+        new Handler().postDelayed(() -> {
+            tooltipContainer.setVisibility(View.GONE);
+            tooltipContainer.removeView(tooltipView);
+        }, 6000); // Display for 6 seconds
     }
 
     private String selectedDate = "";

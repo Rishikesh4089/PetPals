@@ -1,10 +1,18 @@
 <!-- res/layout/activity_doctors_appointments.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
+
+    <!-- Tooltip container for displaying the tooltip at the top -->
+    <FrameLayout
+        android:id="@+id/tooltip_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <!-- Title at the top -->
     <TextView
@@ -29,9 +37,12 @@
     <!-- Floating Action Button to add new appointment -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_appointment_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add" />
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/blue"
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@android:color/white" />
 </LinearLayout>

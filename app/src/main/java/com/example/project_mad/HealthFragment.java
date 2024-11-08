@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class HealthFragment extends Fragment {
 
@@ -16,6 +17,8 @@ public class HealthFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_health, container, false);
+
+
     }
 
     @Override
@@ -24,6 +27,9 @@ public class HealthFragment extends Fragment {
 
         LinearLayout healthCard = view.findViewById(R.id.healthcard);
         LinearLayout dietCard = view.findViewById(R.id.dietcard);
+        TextView medicalprofile = view.findViewById(R.id.medicalprofile);
+
+        medicalprofile.setOnClickListener(v -> openMedicalProfileFragment());
 
         healthCard.setOnClickListener(v -> openInfoFragment(
                 "Health Tips",
@@ -44,6 +50,14 @@ public class HealthFragment extends Fragment {
                         "5. Avoid Toxic Foods: Avoid chocolate, grapes, onions, and similar toxic foods.",
                 R.drawable.diet_tips_image // Replace with actual drawable resource
         ));
+    }
+
+    private void openMedicalProfileFragment() {
+        MedicalProfileFragment fragment = new MedicalProfileFragment();
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment); // Replace fragment_container with your actual container ID
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void openInfoFragment(String title, String message, int imageResId) {

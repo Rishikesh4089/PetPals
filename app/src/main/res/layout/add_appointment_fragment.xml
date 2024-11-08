@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Reason for Appointment"
+        android:layout_marginBottom="10dp"
         android:inputType="textMultiLine" />
 
     <!-- Appointment Type (Consultation, Visit, Online) -->
@@ -26,33 +27,43 @@
         android:id="@+id/appointment_type_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:entries="@array/appointment_types" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dark_grey"
+        android:layout_marginBottom="10dp"/>
+
 
     <!-- Select Appointment Date -->
     <Button
         android:id="@+id/select_date_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded_background"
+        android:textColor="@color/white"
+        android:layout_marginBottom="10dp"
         android:text="Select Date" />
 
     <!-- Select Appointment Time -->
     <Button
         android:id="@+id/select_time_button"
         android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:background="@drawable/button_rounded_background"
         android:text="Select Time" />
-
-    <!-- Upload Medical Profile -->
-    <Button
-        android:id="@+id/upload_medical_profile_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload Medical Profile" />
 
     <!-- Save Appointment Button -->
     <Button
         android:id="@+id/save_appointment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_rounded_background"
         android:text="Save Appointment" />
 </LinearLayout>

@@ -145,7 +145,7 @@ public class RemindersFragment extends Fragment {
 
                 if (!TextUtils.isEmpty(title)) {
                     String status = determineStatus(date, time);
-                    if (status.equals("Unscheduled")) {
+                    if (status.equals("unscheduled")) {
                         dateEditText.setText("");
                         timeEditText.setText("");
                     }
@@ -163,11 +163,11 @@ public class RemindersFragment extends Fragment {
 
         private String determineStatus(String date, String time) {
             if (isFlagged) {
-                return "Flagged";
+                return "flagged";
             } else if ("Date".equals(date) || "Time".equals(time)) {
-                return "Unscheduled";
+                return "unscheduled";
             } else {
-                return "Scheduled";
+                return "scheduled";
             }
         }
 
@@ -178,7 +178,10 @@ public class RemindersFragment extends Fragment {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, selectedDay) -> {
-                String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                // Format day and month to always have two digits
+                String formattedDay = String.format("%02d", selectedDay);
+                String formattedMonth = String.format("%02d", selectedMonth + 1); // Month is 0-based, so we add 1
+                String selectedDate = formattedDay + "/" + formattedMonth + "/" + selectedYear;
                 dateEditText.setText(selectedDate);
             }, year, month, day);
 

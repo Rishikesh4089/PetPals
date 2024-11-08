@@ -1,64 +1,181 @@
 package com.example.project_mad;
 
+import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CompletedReminderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class CompletedReminderFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView recyclerView;
+    private ReminderAdapter adapter;
+    private List<Reminder> reminderList;
+    private FirebaseAuth mAuth;
+    private DatabaseReference remindersRef;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CompletedReminderFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CompletedReminderFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CompletedReminderFragment newInstance(String param1, String param2) {
-        CompletedReminderFragment fragment = new CompletedReminderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_completed_reminder, container, false);
+
+        recyclerView = rootView.findViewById(R.id.completeReminderRecyclerView);
+        reminderList = new ArrayList<>();
+        adapter = new ReminderAdapter(getContext(), reminderList);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            remindersRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("reminders");
+
+            loadCompletedReminders();
+        }
+
+        return rootView;
+    }
+
+    // Reminder data class with a unique key field
+    public static class Reminder {
+        private String key; // Unique key from Firebase
+        private String title;
+        private String description;
+        private String status; // "scheduled" or "completed"
+
+        public Reminder() {
+        }
+
+        public Reminder(String key, String title, String description, String status) {
+            this.key = key;
+            this.title = title;
+            this.description = description;
+            this.status = status;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_completed_reminder, container, false);
+    // Adapter for RecyclerView
+    public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder> {
+
+        private List<Reminder> reminderList;
+        private Context context;
+
+        public ReminderAdapter(Context context, List<Reminder> reminderList) {
+            this.context = context;
+            this.reminderList = reminderList;
+        }
+
+        @NonNull
+        @Override
+        public ReminderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.reminder_card, parent, false);
+            return new ReminderViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ReminderViewHolder holder, int position) {
+            Reminder reminder = reminderList.get(position);
+            holder.reminderTitle.setText(reminder.getTitle());
+            holder.reminderDescription.setText(reminder.getDescription());
+
+            // Always check the checkbox since the reminder status is "completed"
+            holder.checkBox.setChecked(true);
+
+            // Disable the checkbox so the user cannot uncheck it
+            holder.checkBox.setEnabled(false);
+        }
+
+        @Override
+        public int getItemCount() {
+            return reminderList.size();
+        }
+
+        public class ReminderViewHolder extends RecyclerView.ViewHolder {
+            public TextView reminderTitle, reminderDescription;
+            public CheckBox checkBox;
+
+            public ReminderViewHolder(View itemView) {
+                super(itemView);
+                reminderTitle = itemView.findViewById(R.id.reminderTitle);
+                reminderDescription = itemView.findViewById(R.id.reminderDescription);
+                checkBox = itemView.findViewById(R.id.checkBox);
+            }
+        }
+    }
+
+    // Method to load completed reminders
+    private void loadCompletedReminders() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference remindersRef = FirebaseDatabase.getInstance()
+                .getReference("users").child(userId).child("reminders");
+
+        remindersRef.orderByChild("status").equalTo("completed")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        reminderList.clear();
+                        for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                            Reminder reminder = reminderSnapshot.getValue(Reminder.class);
+                            if (reminder != null) {
+                                reminder.setKey(reminderSnapshot.getKey()); // Set the unique key
+                                reminderList.add(reminder);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getActivity(), "Failed to load completed reminders", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

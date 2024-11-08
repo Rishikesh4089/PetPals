@@ -1,6 +1,5 @@
 package com.example.project_mad;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.core.widget.NestedScrollView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +39,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
         calendarView = view.findViewById(R.id.calendarView);
         welcomeMessage = view.findViewById(R.id.welcomeMessage);
         reminderText = view.findViewById(R.id.reminderText);
@@ -53,15 +50,6 @@ public class HomeFragment extends Fragment {
         userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
         remindersRef = FirebaseDatabase.getInstance().getReference("reminders");
 
-        // Set up circular progress bar
-
-
-        // Set up calendar view listener for selecting dates
-        calendarView.setOnDateChangeListener((calendarView, year, month, dayOfMonth) -> {
-            String date = dayOfMonth + "/" + (month + 1) + "/" + year;
-            progressText.setText("Selected Date: " + date);
-        });
-
         // Load user data
         loadUserData();
 
@@ -71,16 +59,17 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-
     private void loadUserData() {
         userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+            if (task.isSuccessful() && isAdded()) {  // Check if fragment is added
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     String petName = dataSnapshot.child("petName").getValue(String.class);
                     String petImageUrl = dataSnapshot.child("petImageUrl").getValue(String.class);
 
-                    welcomeMessage.setText("Welcome back, " + petName + "!");
+                    if (petName != null) {
+                        welcomeMessage.setText("Welcome back, " + petName + "!");
+                    }
 
                     if (petImageUrl != null) {
                         // Load the image from the URL using Glide with requireContext()
@@ -95,12 +84,10 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
-
     private void loadTodayReminders() {
         String todayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         remindersRef.orderByChild("date").equalTo(todayDate).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+            if (task.isSuccessful() && isAdded()) {  // Check if fragment is added
                 StringBuilder remindersBuilder = new StringBuilder();
                 for (DataSnapshot reminderSnapshot : task.getResult().getChildren()) {
                     String title = reminderSnapshot.child("title").getValue(String.class);
