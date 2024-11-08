@@ -1,5 +1,9 @@
 package com.example.project_mad;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -20,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.project_mad.R;
@@ -37,19 +42,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RemindersFragment extends Fragment {
-
     private FloatingActionButton addReminderButton;
     private LinearLayout eventsContainer;
     private EditText searchEditText;
-    private TextView noRemindersTextView; // TextView to show "No reminders found"
+    private TextView noRemindersTextView;
     private DatabaseReference userRef;
     private FirebaseAuth mAuth;
+    private ReminderReceiver reminderReceiver;
 
-    public RemindersFragment() { }
-
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_reminders, container, false);
+
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -63,9 +68,18 @@ public class RemindersFragment extends Fragment {
         addReminderButton = rootView.findViewById(R.id.addReminderButton);
         eventsContainer = rootView.findViewById(R.id.eventsContainer);
         searchEditText = rootView.findViewById(R.id.search_bar);
-        noRemindersTextView = rootView.findViewById(R.id.noRemindersTextView); // Ensure this is defined in your XML
+        noRemindersTextView = rootView.findViewById(R.id.noRemindersTextView);
 
         addReminderButton.setOnClickListener(view -> showAddReminderDialog());
+
+        // Initialize the receiver
+        reminderReceiver = new ReminderReceiver();
+
+        // Register the receiver
+        IntentFilter filter = new IntentFilter("com.example.project_mad.REMINDER_EVENT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getActivity().registerReceiver(reminderReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        }
 
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -83,6 +97,15 @@ public class RemindersFragment extends Fragment {
         loadReminders();
         setupButtonListeners(rootView);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Unregister the receiver when the view is destroyed
+        if (reminderReceiver != null) {
+            getActivity().unregisterReceiver(reminderReceiver);
+        }
     }
 
     private void setupButtonListeners(View rootView) {
@@ -151,6 +174,12 @@ public class RemindersFragment extends Fragment {
                     }
                     if (getParentFragment() != null) {
                         ((RemindersFragment) getParentFragment()).addNewReminder(title, description, date, time, status);
+
+                        // Send a broadcast to notify other parts of the app (e.g., a notification or UI update)
+                        Intent reminderIntent = new Intent("com.example.project_mad.REMINDER_EVENT");
+                        reminderIntent.putExtra("reminder_title", title);
+                        reminderIntent.putExtra("reminder_description", description);
+                        getActivity().sendBroadcast(reminderIntent);
                     }
                     dismiss();
                 } else {
