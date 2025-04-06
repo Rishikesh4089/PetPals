@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import com.bumptech.glide.Glide;
@@ -65,7 +66,7 @@ public class HomeFragment extends Fragment {
 
         // Firebase references
         auth = FirebaseAuth.getInstance();
-        String userId = auth.getCurrentUser().getUid();
+        String userId = Objects.requireNonNull(auth.getCurrentUser()).getUid();
         userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
         remindersRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("reminders");
         appointmentsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("appointments");
@@ -76,14 +77,11 @@ public class HomeFragment extends Fragment {
         // Load reminders and appointments for the selected date
         loadRemindersAndAppointments(selectedDate);
 
-        // Set listener for date selection in the calendar
         calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
-            // Adjust month since CalendarView month is 0-based
             selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
 
             Log.d("HomeFragment", "Selected Date: " + selectedDate);
 
-            // Load reminders and appointments for the selected date
             loadRemindersAndAppointments(selectedDate);
         });
 
@@ -92,7 +90,7 @@ public class HomeFragment extends Fragment {
 
     private void loadUserData() {
         userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && isAdded()) {  // Check if fragment is added
+            if (task.isSuccessful() && isAdded()) {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     String petName = dataSnapshot.child("petName").getValue(String.class);
@@ -103,7 +101,6 @@ public class HomeFragment extends Fragment {
                     }
 
                     if (petImageUrl != null) {
-                        // Load the image from the URL using Glide with requireContext()
                         Glide.with(requireContext())
                                 .load(petImageUrl)
                                 .placeholder(R.drawable.ic_default_pet_image) // Optional placeholder image
@@ -142,13 +139,11 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot appointmentSnapshot : task.getResult().getChildren()) {
                     String doctorName = appointmentSnapshot.child("doctorName").getValue(String.class);
                     String reason = appointmentSnapshot.child("reason").getValue(String.class);
-
                     if (doctorName != null && reason != null) {
                         appointmentList.add(new HomeAppointment(doctorName, reason));
                     }
                 }
 
-                // Set appointmentAdapter and update RecyclerView
                 appointmentAdapter = new HomeAppointmentAdapter(appointmentList);
                 appointmentRecyclerView.setAdapter(appointmentAdapter);
             }

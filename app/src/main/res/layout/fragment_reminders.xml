@@ -8,7 +8,7 @@
     android:background="@android:color/white"
     tools:context=".RemindersFragment">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -26,23 +26,16 @@
                 android:background="@color/white"
                 android:padding="8dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="14dp"
-                    android:src="@drawable/nav_search"
-                    app:tint="@android:color/darker_gray" />
 
-                <EditText
+                <androidx.appcompat.widget.SearchView
                     android:id="@+id/search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:hint="Search"
-                    android:minHeight="48dp"
+                    android:queryHint="Search"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
-                    android:inputType="text" />
+                    android:iconifiedByDefault="false" />
             </LinearLayout>
 
             <!-- Calendar view -->
@@ -54,6 +47,7 @@
                 android:dateTextAppearance="@android:style/TextAppearance.Material.Button"
                 android:weekDayTextAppearance="@android:style/TextAppearance.Material.Caption"
                 android:showWeekNumber="false"
+                android:visibility="visible"
                 android:background="@android:color/white" />
 
             <!-- Buttons grid -->
@@ -61,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="2"
+                android:visibility="visible"
                 android:rowCount="3"
                 android:layout_marginTop="16dp">
 
@@ -198,6 +193,7 @@
                 android:orientation="vertical"
                 android:layout_marginTop="16dp"
                 android:visibility="gone">
+
             </LinearLayout>
 
             <!-- No Reminders TextView -->
@@ -209,6 +205,11 @@
                 android:text="No reminders available."
                 android:textColor="@android:color/darker_gray"
                 android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/reminder_card"
+                android:visibility="gone"/>
 
             <Space
                 android:layout_width="match_parent"
@@ -216,7 +217,7 @@
 
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"

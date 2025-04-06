@@ -1,6 +1,5 @@
 package com.example.project_mad;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.content.pm.PackageManager;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -20,9 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import android.content.pm.PackageManager;
-
 public class ReminderReceiver extends BroadcastReceiver {
+
+    private static final String CHANNEL_ID = "notification_channel"; // Use a constant for the channel ID
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -45,9 +45,15 @@ public class ReminderReceiver extends BroadcastReceiver {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot reminderSnapshot : dataSnapshot.getChildren()) {
                     String title = reminderSnapshot.child("title").getValue(String.class);
-                    // Show notification for reminders
-                    if (title != null) {
-                        showNotification(context, "Reminder", title, "reminder");
+                    String date = reminderSnapshot.child("date").getValue(String.class);
+                    String description = reminderSnapshot.child("description").getValue(String.class);
+                    String status = reminderSnapshot.child("status").getValue(String.class);
+                    String time = reminderSnapshot.child("time").getValue(String.class);
+
+                    // Show notification for reminders that are not completed
+                    if (title != null && !"completed".equals(status)) {
+                        String content = "Title: " + title + "\nDate: " + date + "\nTime: " + time + "\nDescription: " + description;
+                        showNotification(context, "Reminder", content, "reminder");
                     }
                 }
             }
@@ -83,29 +89,22 @@ public class ReminderReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context, String title, String content, String type) {
-        // Create notification channel for Android 8.0 and above
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Reminder and Appointment Channel";
-            String description = "Channel for reminder and appointment notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("notification_channel", name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        // Create the notification channel
+        createNotificationChannel(context);
 
         // Create an Intent to open the home page when clicked
-        Intent homeIntent = new Intent(context, MainActivity.class); // Replace MainActivity with your home page activity
+        Intent homeIntent = new Intent(context, MainActivity.class);
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // Create a PendingIntent to trigger the activity when the notification is clicked
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notification_channel")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_reminder) // Replace with your notification icon
                 .setContentTitle(title)
                 .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content)) // Enables multiline text for longer content
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true); // Dismiss the notification once it's clicked
@@ -117,5 +116,21 @@ public class ReminderReceiver extends BroadcastReceiver {
             return;
         }
         notificationManagerCompat.notify(type.equals("reminder") ? 1 : 2, builder.build()); // Different notification IDs for reminder and appointment
+    }
+
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Reminder Channel";
+            String description = "Channel for reminder notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            // Register the channel with the system
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 }
